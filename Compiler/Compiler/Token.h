@@ -133,7 +133,7 @@ public:
     std::string getTypeString() const;
     std::string getValue() const;
 private:
-    std::string value;
+    std::string _value;
 };
 
 class Operation : public Token {
