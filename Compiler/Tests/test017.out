@@ -1,0 +1,4 @@
+1    1   'simple string' simple string   String
+2    1   ''                              String
+3    1   'string with'#10' espace symbols''' string with
+ espace symbols' String

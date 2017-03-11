@@ -1,0 +1,18 @@
+1    1   1.0             1.000000        Real number
+1    4   +               +               Operation
+1    5   2.0             2.000000        Real number
+2    1   1.              1.000000        Real number
+2    4   -               -               Operation
+2    6   2.0             2.000000        Real number
+3    1   1.0             1.000000        Real number
+3    5   *               *               Operation
+3    6   2.              2.000000        Real number
+4    1   1.              1.000000        Real number
+4    3   >               >               Operation
+4    5   2.              2.000000        Real number
+5    1   1e0             1.000000        Real number
+5    4   +               +               Operation
+5    5   2e0             2.000000        Real number
+6    1   1e+0            1.000000        Real number
+6    6   +               +               Operation
+6    8   2e+0            2.000000        Real number

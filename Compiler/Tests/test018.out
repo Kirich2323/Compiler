@@ -1,0 +1,16 @@
+1    1   +               +               Operation
+2    1   -               -               Operation
+3    1   *               *               Operation
+4    1   /               /               Operation
+5    1   :=              :=              Operation
+6    1   +=              +=              Operation
+7    1   -=              -=              Operation
+8    1   *=              *=              Operation
+9    1   /=              /=              Operation
+10   1   <               <               Operation
+11   1   >               >               Operation
+12   1   =               =               Operation
+13   1   <=              <=              Operation
+14   1   >=              >=              Operation
+15   1   <>              <>              Operation
+16   1   ^               ^               Operation
