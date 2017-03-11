@@ -105,10 +105,7 @@ std::string RealNumber::getValue() const
 
 String::String(int line, int col, std::string text, std::string value) :
     Token(line, col, TokenType::String, text),
-    _value(value )
-{
-    //value = std::string(text.substr(1, text.size() - 2));
-}
+    _value(value ) {}
 
 std::string String::getTypeString() const
 {
