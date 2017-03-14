@@ -7,10 +7,6 @@
 
 class ScannerTest : public ::testing::Test {
 protected:
-    void SetUp() {}
-
-    void TearDown() { test_stream.close(); }
-
     void check(const std::string& fname) 
     {
         test_stream = std::ifstream("../Tests/" + fname + ".out");
@@ -19,7 +15,6 @@ protected:
         testing = Scanner( ("../Tests/" + fname + ".in").c_str() ).getTokensString();
         ASSERT_STREQ(testing.c_str(), expected.c_str());
     }
-    std::ifstream test_stream;
     std::string expected;
     std::string testing;    
 };
