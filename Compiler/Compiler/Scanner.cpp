@@ -93,6 +93,12 @@ TokenPtr Scanner::getNextToken()
     return _token;
 }
 
+void Scanner::expect(TokenType expected) {
+    if (_token->getType() != expected) {
+        throw UnexpectedToken(_token->getLine(), _token->getCol(), _token->getTypeString());
+    }
+}
+
 Scanner::~Scanner()
 {
     _fin.close();

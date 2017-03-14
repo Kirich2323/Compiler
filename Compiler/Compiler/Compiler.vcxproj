@@ -120,12 +120,17 @@
   <ItemGroup>
     <ClCompile Include="error.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Parser.cpp" />
     <ClCompile Include="Scanner.cpp" />
+    <ClCompile Include="SynNode.cpp" />
+    <ClCompile Include="Tests.cpp" />
     <ClCompile Include="Token.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="error.h" />
+    <ClInclude Include="Parser.h" />
     <ClInclude Include="Scanner.h" />
+    <ClInclude Include="SynNode.h" />
     <ClInclude Include="Tests.h" />
     <ClInclude Include="Token.h" />
   </ItemGroup>

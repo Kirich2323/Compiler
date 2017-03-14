@@ -19,6 +19,7 @@ public:
     std::string getTokensString();
     TokenPtr getToken() const;
     TokenPtr getNextToken();
+    void expect(TokenType);
     ~Scanner();
 private:
     bool readChar();

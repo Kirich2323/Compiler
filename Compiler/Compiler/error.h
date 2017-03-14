@@ -44,5 +44,20 @@ public:
 
 class MissingFile : public BaseException {
 public:
-    MissingFile(std::string);
+    MissingFile(const std::string&);
+};
+
+class UnexpectedToken : public BaseException {
+public:
+    UnexpectedToken(int, int, const std::string&);
+};
+
+class InvalidExpression : public BaseException {
+public:
+    InvalidExpression(int, int);
+};
+
+class UnexpectedEndOfFile : public BaseException {
+public:
+    UnexpectedEndOfFile(int, int);
 };
