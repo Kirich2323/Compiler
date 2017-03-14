@@ -4,8 +4,6 @@
 #include <string>
 #include "Scanner.h"
 
-#include <map>
-#include <unordered_map>
 
 class ScannerTest : public ::testing::Test {
 protected:
