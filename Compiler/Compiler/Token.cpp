@@ -31,6 +31,10 @@ std::string Token::getValue() const
     return _text;
 }
 
+bool Token::operator==(TokenType type) {
+    return type == _type;
+}
+
 Operation::Operation(int line, int col, TokenType type, std::string text) :
     Token(line, col, TokenType::Operation, text) {}
 

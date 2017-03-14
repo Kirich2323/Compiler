@@ -89,6 +89,7 @@ public:
     TokenType getType() const;
     virtual std::string getValue() const;
     virtual std::string getTypeString() const = 0;
+    bool operator==(TokenType);
 private:
     std::string _token_name;
     int _line, _col;
