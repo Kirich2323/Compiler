@@ -111,7 +111,7 @@ public:
 };
 
 class IntegerNumber : public Token {
-public :
+public:
     IntegerNumber(int, int, std::string);
     IntegerNumber(int, int, std::string, int value);
     std::string getTypeString() const;
