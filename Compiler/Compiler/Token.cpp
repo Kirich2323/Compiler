@@ -47,8 +47,8 @@ std::string EndOfFile::getTypeString() const
     return "End of file";
 }
 
-Word::Word(int line, int col, std::string text) :
-    Token(line, col, TokenType::Word, text) {}
+Word::Word(int line, int col, TokenType type, std::string text) :
+    Token(line, col, type, text) {}
 
 std::string Word::getTypeString() const
 {

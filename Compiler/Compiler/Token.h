@@ -104,7 +104,7 @@ public:
 
 class Word : public Token {
 public:
-    Word(int, int, std::string);
+    Word(int, int, TokenType, std::string);
     std::string getTypeString() const;
 };
 

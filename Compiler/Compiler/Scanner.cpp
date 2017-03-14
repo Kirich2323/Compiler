@@ -222,7 +222,7 @@ void Scanner::readIdentifier()
 {
     while (readChar() && isLetterOrDigit());
     if (isKeyWord(_charBuffer)) {
-        setToken<Word>();
+        setToken(new Word(_tokenLine, _tokenCol, _keywords[_charBuffer], _charBuffer));
     }
     else {
         setToken<Identifier>();
