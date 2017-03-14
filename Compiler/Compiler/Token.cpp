@@ -36,7 +36,7 @@ bool Token::operator==(TokenType type) {
 }
 
 Operation::Operation(int line, int col, TokenType type, std::string text) :
-    Token(line, col, TokenType::Operation, text) {}
+    Token(line, col, type, text) {}
 
 std::string Operation::getTypeString() const
 {
