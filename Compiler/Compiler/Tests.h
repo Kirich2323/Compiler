@@ -1,9 +1,9 @@
 #pragma once
-#include "gtest\gtest.h"
 #include <fstream>
 #include <string>
-#include "Scanner.h"
 
+#include "gtest\gtest.h"
+#include "Scanner.h"
 
 class ScannerTest : public ::testing::Test {
 protected:
