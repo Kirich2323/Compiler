@@ -96,6 +96,8 @@ private:
     std::string _text;
 };
 
+typedef std::shared_ptr<Token> TokenPtr;
+
 class Identifier : public Token {
 public:
     Identifier(int, int, std::string);

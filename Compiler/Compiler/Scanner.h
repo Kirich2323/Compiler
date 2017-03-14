@@ -11,8 +11,6 @@
 #include "Token.h"
 #include "error.h"
 
-typedef std::shared_ptr<Token> TokenPtr;
-
 class Scanner {
 public:
     Scanner(const char*);
