@@ -15,7 +15,7 @@ Scanner::Scanner(const char* fname) :
         { "-=", TokenType::SubAssignment },
         { "*",  TokenType::Mul },
         { "*=", TokenType::MulAssignment },
-        { "/",  TokenType::Div },
+        { "/",  TokenType::DivReal },
         { "/=", TokenType::DivAssignment },
         { ":=", TokenType::Assigment },
         { "=",  TokenType::Equal },
