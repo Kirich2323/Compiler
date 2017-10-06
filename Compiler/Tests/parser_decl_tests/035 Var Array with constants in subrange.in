@@ -1,0 +1,5 @@
+const
+    left = 1;
+    right = 20;
+var
+    a : array [left..right] of integer;

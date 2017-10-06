@@ -1,0 +1,8 @@
+var
+    a : integer;
+begin
+    if (10 > 5) 
+    begin
+        a := 10;
+    end
+end.

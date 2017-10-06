@@ -1,0 +1,6 @@
+function name() : integer;
+var
+    a :integer;
+    b : float;
+begin
+end;

@@ -1,0 +1,17 @@
+type
+    rec = record
+         d : integer;
+    end;
+
+    smth = record
+        a : integer;
+        b : float;
+        c : rec;
+    end;
+var
+    a : integer;
+    b : smth;
+
+begin
+    a := b.c.d;
+end.

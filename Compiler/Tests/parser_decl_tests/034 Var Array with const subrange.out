@@ -1,0 +1,7 @@
+main
+----------
+char                     type 
+float                    type 
+integer                  type 
+MySubRange         type alias  subrange 1..10
+a                         var array [1..10] of integer

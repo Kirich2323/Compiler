@@ -1,0 +1,6 @@
+var
+    a : integer;
+begin
+    for a := 0 20 do
+        b := b;
+end.

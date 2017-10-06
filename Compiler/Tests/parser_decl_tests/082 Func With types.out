@@ -1,0 +1,11 @@
+main
+----------
+char                     type 
+float                    type 
+integer                  type 
+name                     func 
+ arguments:
+    result            func result         integer
+ locals:
+    a                  type alias         integer
+    b                  type alias           float

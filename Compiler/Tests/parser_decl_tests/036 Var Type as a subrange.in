@@ -1,0 +1,4 @@
+type
+    sub = 1..10;
+var
+    a : sub;

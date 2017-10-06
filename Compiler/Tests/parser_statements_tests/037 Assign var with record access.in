@@ -1,0 +1,10 @@
+type
+    smth = record
+        c : integer;
+    end;
+var
+    a : smth;
+    b : integer;
+begin
+    b := a.c;
+end.

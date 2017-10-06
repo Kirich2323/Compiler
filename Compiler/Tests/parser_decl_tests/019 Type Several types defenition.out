@@ -1,0 +1,10 @@
+main
+----------
+char                     type 
+float                    type 
+integer                  type 
+myType             type alias         integer
+myOtherType        type alias         integer
+myAnotherType      type alias         integer
+myFourthType       type alias           float
+myLastType         type alias            char

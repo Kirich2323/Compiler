@@ -1,0 +1,11 @@
+main
+----------
+char                     type 
+float                    type 
+integer                  type 
+name                     proc 
+ arguments:
+    a                       param         integer
+    b                       param         integer
+    d                       param           float
+ locals:

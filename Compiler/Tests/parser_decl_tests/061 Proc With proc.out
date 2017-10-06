@@ -1,0 +1,12 @@
+main
+----------
+char                     type 
+float                    type 
+integer                  type 
+name                     proc 
+ arguments:
+ locals:
+    anothername              proc 
+     arguments:
+     locals:
+

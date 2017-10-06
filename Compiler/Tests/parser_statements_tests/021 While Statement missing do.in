@@ -1,0 +1,6 @@
+var
+    a : integer = 0;
+begin
+    while a < 10
+        a := a + 1;
+end.

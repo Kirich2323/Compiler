@@ -1,0 +1,2 @@
+type
+    mySubrangeType = 1..2;

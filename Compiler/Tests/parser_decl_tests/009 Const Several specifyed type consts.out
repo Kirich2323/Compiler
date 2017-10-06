@@ -1,0 +1,7 @@
+main
+----------
+char                     type 
+float                    type 
+integer                  type 
+a               const integer              10
+b                 const float             0.5

@@ -1,0 +1,6 @@
+procedure name();
+type
+    a  = integer;
+    b  = float;
+begin
+end;

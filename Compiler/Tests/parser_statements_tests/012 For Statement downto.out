@@ -1,0 +1,9 @@
+\- main block
+   \- for
+      |- a
+      |- Downto
+      |- 0
+      |- 10
+      \- :=
+         |- b
+         \- b

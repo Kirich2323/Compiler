@@ -1,0 +1,9 @@
+function f(a, b : integer) : integer;
+begin
+end;
+
+var
+    a : integer = -10;
+begin
+    a := f(10, a);
+end.

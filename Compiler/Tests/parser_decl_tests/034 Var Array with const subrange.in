@@ -1,0 +1,4 @@
+type
+    MySubRange = 1..10;
+var
+    a : array [MySubRange] of integer;

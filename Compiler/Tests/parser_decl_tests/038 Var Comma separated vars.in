@@ -1,0 +1,3 @@
+var
+    a, b: integer;
+    c, d, e, g, f, k, l, m, v, x, z : float;

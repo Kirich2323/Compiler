@@ -1,0 +1,5 @@
+const
+    a = 0;
+    b = 10;
+    c = -b;
+    ConstName = a;

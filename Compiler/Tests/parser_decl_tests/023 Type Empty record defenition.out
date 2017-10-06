@@ -1,0 +1,6 @@
+main
+----------
+char                     type 
+float                    type 
+integer                  type 
+MyRecordType       type alias          record

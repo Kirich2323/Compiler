@@ -1,0 +1,9 @@
+var
+    a : integer;
+    b : integer = 10;
+    c : integer;
+begin
+    c := b * 2 + 1024;
+    for a := b * 3 to c do
+        b := b;
+end.

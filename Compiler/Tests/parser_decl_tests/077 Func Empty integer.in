@@ -1,0 +1,3 @@
+function name() : integer;
+begin
+end;

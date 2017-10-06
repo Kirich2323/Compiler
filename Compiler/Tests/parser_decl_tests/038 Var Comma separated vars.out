@@ -1,0 +1,18 @@
+main
+----------
+char                     type 
+float                    type 
+integer                  type 
+a                         var         integer
+b                         var         integer
+c                         var           float
+d                         var           float
+e                         var           float
+g                         var           float
+f                         var           float
+k                         var           float
+l                         var           float
+m                         var           float
+v                         var           float
+x                         var           float
+z                         var           float

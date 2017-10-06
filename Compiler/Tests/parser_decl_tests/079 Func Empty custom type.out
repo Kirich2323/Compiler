@@ -1,0 +1,10 @@
+main
+----------
+char                     type 
+float                    type 
+integer                  type 
+myType             type alias array [1..10] of integer
+name                     func 
+ arguments:
+    result            func result          myType
+ locals:

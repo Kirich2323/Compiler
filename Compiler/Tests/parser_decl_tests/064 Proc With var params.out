@@ -1,0 +1,13 @@
+main
+----------
+char                     type 
+float                    type 
+integer                  type 
+name                     proc 
+ arguments:
+    k                       param         integer
+    a                   var param         integer
+    b                   var param         integer
+    d                       param           float
+    m                   var param           float
+ locals:

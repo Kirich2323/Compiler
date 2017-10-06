@@ -1,0 +1,6 @@
+function name() : integer;
+type
+    a  = integer;
+    b  = float;
+begin
+end;

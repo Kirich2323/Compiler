@@ -1,0 +1,6 @@
+main
+----------
+char                     type 
+float                    type 
+integer                  type 
+myArrayType        type alias array [1..2] of integer

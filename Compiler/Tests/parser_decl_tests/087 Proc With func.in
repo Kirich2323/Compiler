@@ -1,0 +1,8 @@
+procedure name();
+
+ function anothername() : integer;
+ begin
+ end;
+
+begin
+end;

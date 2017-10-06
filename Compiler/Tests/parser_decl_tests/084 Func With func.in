@@ -1,0 +1,8 @@
+function name() : integer;
+
+ function anothername() : integer;
+ begin
+ end;
+
+begin
+end;

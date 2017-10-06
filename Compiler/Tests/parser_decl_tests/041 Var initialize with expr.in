@@ -1,0 +1,8 @@
+const
+    m = 10;
+    l = 12.0;
+var
+    a : integer = -(10 + 2)*3 + 100;
+    b : float = 10.1 / 2.0;
+    c : integer = m + m;
+    d : float = -l;

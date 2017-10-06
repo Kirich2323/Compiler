@@ -1,0 +1,6 @@
+var
+    a : array [1..10] of integer;
+    b : integer;
+begin
+    b := a[1];
+end.

@@ -1,0 +1,10 @@
+main
+----------
+char                     type 
+float                    type 
+integer                  type 
+rec                type alias          record
+    a                         var         integer
+    c                         var           float
+    d                         var           float
+    arr                       var array [1..10] of char

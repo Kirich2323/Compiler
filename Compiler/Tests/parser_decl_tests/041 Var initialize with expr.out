@@ -1,0 +1,11 @@
+main
+----------
+char                     type 
+float                    type 
+integer                  type 
+m               const integer              10
+l                 const float              12
+a                         var         integer             64
+b                         var           float           5.05
+c                         var         integer             20
+d                         var           float            -12

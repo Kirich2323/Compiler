@@ -1,0 +1,6 @@
+function name() : integer;
+const
+    a = 10;
+    b : float = 0.5;
+begin
+end;

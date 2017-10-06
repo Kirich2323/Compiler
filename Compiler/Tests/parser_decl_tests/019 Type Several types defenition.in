@@ -1,0 +1,6 @@
+type
+    myType = integer;
+    myOtherType = integer;
+    myAnotherType = myOtherType;
+    myFourthType = float;
+    myLastType = char;

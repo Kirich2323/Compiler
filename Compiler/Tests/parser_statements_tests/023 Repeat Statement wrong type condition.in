@@ -1,0 +1,7 @@
+var
+    a : integer = 0;
+begin
+    repeat
+        a := a + 10;
+    until a + 20
+end.

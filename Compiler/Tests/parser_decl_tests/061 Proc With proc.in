@@ -1,0 +1,8 @@
+procedure name();
+
+ procedure anothername();
+ begin
+ end;
+
+begin
+end;

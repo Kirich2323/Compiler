@@ -1,0 +1,9 @@
+main
+----------
+char                     type 
+float                    type 
+integer                  type 
+ac              const integer              10
+bc                const float            10.1
+a                         var         integer             10
+b                         var           float           10.1

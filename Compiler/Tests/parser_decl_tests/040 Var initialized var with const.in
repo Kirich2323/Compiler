@@ -1,0 +1,6 @@
+const
+    ac = 10;
+    bc = 10.1;
+var
+    a : integer = ac;
+    b : float = bc;

@@ -1,0 +1,3 @@
+type
+    newType = integer
+    anotherType = float;

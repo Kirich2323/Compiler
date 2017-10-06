@@ -1,0 +1,5 @@
+\- main block
+   \- call
+      |- f
+      |- 10
+      \- a

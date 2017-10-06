@@ -1,0 +1,4 @@
+type
+    b = integer;
+var
+    a : integer = b;

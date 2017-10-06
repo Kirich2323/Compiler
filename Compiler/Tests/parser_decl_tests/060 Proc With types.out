@@ -1,0 +1,10 @@
+main
+----------
+char                     type 
+float                    type 
+integer                  type 
+name                     proc 
+ arguments:
+ locals:
+    a                  type alias         integer
+    b                  type alias           float

@@ -1,0 +1,6 @@
+type
+    rec = record
+        a : integer;
+        c, d : float;
+        arr : array [1..10] of char;
+    end;

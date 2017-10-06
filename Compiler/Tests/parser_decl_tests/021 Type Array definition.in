@@ -1,0 +1,2 @@
+type
+    myArrayType = Array [1..2] of integer;

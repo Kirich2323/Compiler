@@ -1,0 +1,8 @@
+function name() : integer;
+
+ procedure anothername();
+ begin
+ end;
+
+begin
+end;

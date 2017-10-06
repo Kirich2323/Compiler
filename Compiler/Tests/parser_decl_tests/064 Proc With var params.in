@@ -1,0 +1,3 @@
+procedure name(k : integer; var a, b : integer; d : float; var m : float);
+begin
+end;

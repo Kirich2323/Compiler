@@ -1,0 +1,7 @@
+main
+----------
+char                     type 
+float                    type 
+integer                  type 
+a                         var         integer             10
+b                         var           float           10.1

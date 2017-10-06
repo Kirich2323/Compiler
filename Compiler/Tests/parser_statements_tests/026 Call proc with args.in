@@ -1,0 +1,8 @@
+procedure f(a, b : integer);
+begin
+end;
+var
+    a : integer = -10;
+begin
+    f(10, a);
+end.

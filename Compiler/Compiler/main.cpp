@@ -7,8 +7,7 @@
 
 using namespace std;
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     try {
         if (argc == 3) {
             if (!strcmp(argv[2], "-l")) {
@@ -17,7 +16,10 @@ int main(int argc, char *argv[])
             }
             else if (!strcmp(argv[2], "-p")) {
                 Parser parser(argv[1]);
-                cout << parser.getNodeTreeStr();
+                //parser.setSymbolCheck(false);
+                //cout << parser.getNodeTreeStr() << endl;
+                //cout << parser.getDeclStr() << endl;
+                cout << parser.getStmtStr() << endl;
             }
         }
         else if (argc == 2) {
@@ -31,7 +33,7 @@ int main(int argc, char *argv[])
         }
     }
     catch (BaseException e) {
-        cout << e.what();
+        cout << e.what() << endl;
     }
     return 0;
 }

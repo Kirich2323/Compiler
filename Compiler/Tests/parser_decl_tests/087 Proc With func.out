@@ -1,0 +1,13 @@
+main
+----------
+char                     type 
+float                    type 
+integer                  type 
+name                     proc 
+ arguments:
+ locals:
+    anothername              func 
+     arguments:
+        result            func result         integer
+     locals:
+

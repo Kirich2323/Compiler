@@ -1,331 +1,252 @@
 #include "Tests.h"
 
-TEST_F(ScannerTest, SingleCharacterIdentifire) {
-check("test000");
-}
-
-TEST_F(ScannerTest, MultiCharacterIdentifire) {
-    check("test002");
-}
-
-TEST_F(ScannerTest, EmptyFile) {
-    check("test001");
-}
-
-TEST_F(ScannerTest, SkipSpaces) {
-    check("test003");
-}
-
-TEST_F(ScannerTest, SkipEmptyLines) {
-    check("test004");
-}
-
-TEST_F(ScannerTest, SkipSingleLineComment) {
-    check("test005");
-}
-
-TEST_F(ScannerTest, SkipMultiLineComment) {
-    check("test006");
-}
-
-TEST_F(ScannerTest, SkipTwoSingleLineComments) {
-    check("test007");
-}
-
-TEST_F(ScannerTest, TwoIdentifiers) {
-    check("test008");
-}
-
-TEST_F(ScannerTest, DecimalInteger) {
-    check("test009");
-}
-
-TEST_F(ScannerTest, Real1) {
-    check("test010");
-}
-
-TEST_F(ScannerTest, Real2) {
-    check("test011");
-}
-
-TEST_F(ScannerTest, Real3) {
-    check("test012");
-}
-
-TEST_F(ScannerTest, HexadecimalInteger1) {
-    check("test013");
-}
-
-TEST_F(ScannerTest, HexadecimalInteger2) {
-    check("test014");
-}
-
-TEST_F(ScannerTest, OctalInteger) {
-    check("test015");
-}
-
-TEST_F(ScannerTest, BinaryInteger) {
-    check("test016");
-}
-
-TEST_F(ScannerTest, String) {
-    check("test017");
-}
-
-TEST_F(ScannerTest, Operations) {
-    check("test018");
-}
-
-TEST_F(ScannerTest, Keywords) {
-    check("test019");
-}
-
-TEST_F(ScannerTest, Delimiters) {
-    check("test020");
-}
-
-TEST_F(ScannerTest, Range) {
-    check("test021");
-}
-
-TEST_F(ScannerTest, OperationWithIntegers) {
-    check("test022");
-}
-
-TEST_F(ScannerTest, OperationWithReals) {
-    check("test023");
-}
-
-TEST_F(ScannerTest, InvalidInteger1) {
-    check("test024");
-}
-
-TEST_F(ScannerTest, InvalidInteger2) {
-    check("test025");
-}
-
-TEST_F(ScannerTest, InvalidInteger3) {
-    check("test026");
-}
-
-TEST_F(ScannerTest, InvalidInteger4) {
-    check("test027");
-}
-
-TEST_F(ScannerTest, InvalidReal1) {
-    check("test028");
-}
-
-TEST_F(ScannerTest, InvalidReal2) {
-    check("test029");
-}
-
-TEST_F(ScannerTest, InvalidReal3) {
-    check("test030");
-}
-
-TEST_F(ScannerTest, InvalidReal4) {
-    check("test031");
-}
-
-TEST_F(ScannerTest, UnterminatedString1) {
-    check("test032");
-}
-
-TEST_F(ScannerTest, UnterminatedString2) {
-    check("test033");
-}
-
-TEST_F(ScannerTest, UnterminatedComment) {
-    check("test034");
-}
-
-TEST_F(ScannerTest, MissingFile) {
-    EXPECT_THROW(check("test035"), MissingFile);
-}
-
-TEST_F(ParserTest, EmptyFile) {
-    //EXPECT_THROW(check("test000"), UnexpectedEndOfFile);
-    check_throw("test000");
-}
-
-TEST_F(ParserTest, IntegerNode) {
-    check("test001");
-}
-
-TEST_F(ParserTest, RealNode) {
-    check("test002");
-}
-
-TEST_F(ParserTest, IdentifierNode) {
-    check("test003");
-}
-
-TEST_F(ParserTest, Equal) {
-    check("test004");
-}
-
-TEST_F(ParserTest, NotEqual) {
-    check("test005");
-}
-
-TEST_F(ParserTest, Less) {
-    check("test006");
-}
-
-TEST_F(ParserTest, LessEqual) {
-    check("test007");
-}
-
-TEST_F(ParserTest, Greater) {
-    check("test008");
-}
-
-TEST_F(ParserTest, GreaterEqual) {
-    check("test009");
-}
-
-TEST_F(ParserTest, Add2Factors) {
-    check("test010");
-}
-
-TEST_F(ParserTest, Add3Factors) {
-    check("test011");
-}
-
-TEST_F(ParserTest, Sub2Factors) {
-    check("test012");
-}
-
-TEST_F(ParserTest, Sub3Factors) {
-    check("test013");
-}
-
-TEST_F(ParserTest, OrFactors) {
-    check("test014");
-}
-
-TEST_F(ParserTest, XorFactors) {
-    check("test015");
-}
-
-TEST_F(ParserTest, ShiftLeft) {
-    check("test016");
-}
-
-TEST_F(ParserTest, ShiftRight) {
-    check("test017");
-}
-
-TEST_F(ParserTest, Mult2Factors) {
-    check("test018");
-}
-
-TEST_F(ParserTest, Mult3Factors) {
-    check("test019");
-}
-
-TEST_F(ParserTest, AddAndMult) {
-    check("test020");
-}
-
-TEST_F(ParserTest, GroupedAddAndMult) {
-    check("test021");
-}
-
-TEST_F(ParserTest, Div2Factors) {
-    check("test022");
-}
-
-TEST_F(ParserTest, Div3Factors) {
-    check("test023");
-}
-
-TEST_F(ParserTest, Mod2Factors) {
-    check("test024");
-}
-
-TEST_F(ParserTest, Mod3Factors) {
-    check("test025");
-}
-
-TEST_F(ParserTest, RealDiv2Factors) {
-    check("test026");
-}
-
-TEST_F(ParserTest, RealDiv3Factors) {
-    check("test027");
-}
-
-TEST_F(ParserTest, And) {
-    check("test028");
-}
-
-TEST_F(ParserTest, UnarMinus) {
-    check("test029");
-}
-
-TEST_F(ParserTest, UnarPlus) {
-    check("test030");
-}
-
-TEST_F(ParserTest, UnarNot) {
-    check("test031");
-}
-
-TEST_F(ParserTest, UnarCombination) {
-    check("test032");
-}
-
-TEST_F(ParserTest, RecordAccess) {
-    check("test033");
-}
-
-TEST_F(ParserTest, MultipleRecordAccess) {
-    check("test034");
-}
-
-TEST_F(ParserTest, ArrayIndex) {
-    check("test035");
-}
-
-TEST_F(ParserTest, MultidimensionalArrayIndex) {
-    check("test036");
-}
-
-TEST_F(ParserTest, CombinationOfRecordAccesAndArrayIndeces1) {
-    check("test037");
-}
-
-TEST_F(ParserTest, CombinationOfRecordAccesAndArrayIndeces2) {
-    check("test038");
-}
-
-TEST_F(ParserTest, ComplexExpression1) {
-    check("test039");
-}
-
-TEST_F(ParserTest, ComplexExpression2) {
-    check("test040");
-}
-
-TEST_F(ParserTest, MissingClosingParenthesis) {
-    check_throw("test041");
-}
-
-TEST_F(ParserTest, MissingClosingSquareBracket1) {
-    check_throw("test042");
-}
-
-TEST_F(ParserTest, MissingClosingSquareBracket2) {
-    check_throw("test043");
-}
-
-TEST_F(ParserTest, MissingIdentifierAfterRecordAccess) {
-    check_throw("test044");
-}
-
-TEST_F(ParserTest, MissingIdentgIdentifierAfterOperation) {
-    check_throw("test045");
-}
-
+#define VALUESIN(X) ::testing::ValuesIn(X)
+
+std::vector<std::string> scannerCheckFiles = {
+    "000 Single character identifire",
+    "001 Multi character identifire",
+    "002 Empty file",
+    "003 Skip spaces",
+    "004 Skip empty lines",
+    "005 Skip single line comment",
+    "006 Skip multi line comment",
+    "007 Skip two single line comments",
+    "008 Two identifiers",
+    "009 Decimal integer",
+    "010 Real",
+    "011 Real another",
+    "012 Real another one",
+    "013 Hexadecimal integer",
+    "014 Hexadecimal integer another",
+    "015 Octal integer",
+    "015 Octal integer",
+    "017 String",
+    "018 Operations",
+    "019 Keywords",
+    "020 Delimiters",
+    "021 Range",
+    "022 Opeations with integers",
+    "023 Operatins with reals",
+};
+std::vector<std::string> scannerThrowFiles = {
+    "024 Invalid integer1",
+    "025 Invalid integer2",
+    "026 Invalid integer3",
+    "027 Invalid integer4",
+    "028 Invalid real1",
+    "029 Invalid real2",
+    "030 Invalid real3",
+    "031 Invalid real4",
+    "032 Unterminated string1",
+    "033 Unterminated string2",
+    "034 Unterminated comment",
+    "035 Missing file",
+};
+std::vector<std::string> parserCheckExpFiles = {
+    "001IntegerNode",
+    "002RealNode",
+    "003IdentifierNode",
+    "004Equal",
+    "005NotEqual",
+    "006Less",
+    "007LessEqual",
+    "008Greater",
+    "009GreaterEqual",
+    "010Add2Factors",
+    "011Add3Factors",
+    "012Sub2Factors",
+    "013Sub3Factors",
+    "014OrFactors",
+    "015XorFactors",
+    "016ShiftLeft",
+    "017ShiftRight",
+    "018Mult2Factors",
+    "019Mult3Factors",
+    "020AddAndMult",
+    "021GroupedAddAndMult",
+    "022Div2Factors",
+    "023Div3Factors",
+    "024Mod2Factors",
+    "025Mod3Factors",
+    "026RealDiv2Factors",
+    "027RealDiv3Factors",
+    "028And",
+    "029UnarMinus",
+    "030UnarPlus",
+    "031UnarNot",
+    "032UnarCombination",
+    "033RecordAccess",
+    "034MultipleRecordAccess",
+    "035ArrayIndex",
+    "036MultidimensionalArrayIndex",
+    "037CombinationOfRecordAccesAndArrayIndeces1",
+    "038CombinationOfRecordAccesAndArrayIndeces2",
+    "039ComplexExpression1",
+    "040ComplexExpression2"
+};
+std::vector<std::string> parserCheckThrowExpFiles = {
+    "000UnexpectedEndOfFile",
+    "041MissingClosingParenthesis",
+    "042MissingClosingSquareBracket1",
+    "043MissingClosingSquareBracket2",
+    "044MissingIdentifierAfterRecordAccess",
+    "045MissingIdentgIdentifierAfterOperation",
+};
+std::vector<std::string> parserCheckDeclFiles = {
+    "000 Empty program name",
+    "001 Custom program name",
+    "002 Const One integer",
+    "003 Const One float",
+    "004 Const Several integers",
+    "005 Const Several floats",
+    "006 Const Several mixed type const",
+    "007 Const Assign const with another const",
+    "008 Const Specifyed type",
+    "009 Const Several specifyed type consts",
+    "015 Const Int to float assignment",
+    "018 Type One type definition",
+    "019 Type Several types defenition",
+    "020 Type Subrange defenition",
+    "021 Type Array definition",
+    "022 Type Multi dimensional array defenition",
+    "023 Type Empty record defenition",
+    "030 Var Integer",
+    "031 Var Float",
+    "032 Var Several vars",
+    "033 Var Array",
+    "034 Var Array with const subrange",
+    "035 Var Array with constants in subrange",
+    "036 Var Type as a subrange",
+    "037 Var Open array",
+    "038 Var Comma separated vars",
+    "039 Var Initialized var with lateral",
+    "040 Var initialized var with const",
+    "041 Var initialize with expr",
+    "054 Type Record with vars",
+    "055 Type assign record to another type",
+    "057 Proc empty",
+    "058 Proc With consts",
+    "059 Proc With vars",
+    "060 Proc With types",
+    "061 Proc With proc",
+    "062 Proc With param",
+    "063 Proc With several params",
+    "064 Proc With var params",
+    "077 Func Empty integer",
+    "078 Func Empty float",
+    "079 Func Empty custom type",
+    "080 Func With consts",
+    "081 Func With vars",
+    "082 Func With types",
+    "083 Func With proc",
+    "084 Func With func",
+    "087 Proc With func",
+};
+std::vector<std::string> parserCheckThrowDeclFiles = {
+    "010 Const Missing colon",
+    "011 Const Missing equal sign",
+    "012 Const Missing value",
+    "013 Const Missing identifier",
+    "014 Const Float to int assignment",
+    "016 Const Assign const with a type",
+    "017 Const Duplicate constants",
+    "024 Type Missing assignment",
+    "025 Type Missing semicolon",
+    "026 Type Missing identifier",
+    "027 Type Missing typename",
+    "028 Type Empty",
+    "029 Type Duplicate types",
+    "042 Var Missing comma",
+    "043 Var Missing colon",
+    "044 Var Assign value to a several vars",
+    "045 Var Missing identifire after comma",
+    "046 Var Assign type as a constant",
+    "047 Var Duplicate vars",
+    "048 Var Use already reserved name",
+    "049 Var Assign var with wrong type value",
+    "050 Var Assign var with type",
+    "051 Var Missing equal sign in assignment",
+    "052 Var Missing semicolon",
+    "053 Var empty var",
+    "065 Proc Missing begin",
+    "066 Proc Missing end",
+    "067 Proc Missing semilocon after args",
+    "068 Proc Missing comma in args",
+    "069 Proc Missing semicolon in args",
+    "070 Proc Missing semilocon after end",
+    "071 Proc Missing opening parenthesis",
+    "072 Proc Missing clothing parenthesis",
+    "073 Proc Missing type in args",
+    "074 Proc Missing colon in args",
+    "075 Proc Semilocon after last args type",
+    "076 Proc Missing identifier in args",
+    "085 Func Missing semilocon before results type",
+    "086 Func Missing types result",
+};
+std::vector<std::string> parserStatementCheckFiles = {
+    "000 Empty Statement",
+    "001 Assignment",    
+    "003 If Statement without else",
+    "004 If Statement with else",
+    "006 If Statement with inner block",
+    "010 For Statement",
+    "011 For Statement complex initialization",
+    "019 While Statement",
+    "022 Repeat Statement",
+    "025 Call empty proc",
+    "026 Call proc with args",
+    "027 Call empty func",
+    "028 Call func with args",
+    "032 Assign var with a call",
+    "034 Assign var with array",
+    "037 Assign var with record access",
+    "038 Assign var with several records access",
+};
+std::vector<std::string> parserStatementCheckThrowFiles = {
+    "002 Assignment Wrong Type",
+    "005 If Statement with wrong type condition",
+    "007 If statement missing then",
+    "008 If Statement missing else",
+    "009 If statement missing condition",
+    "013 For Statement with wrong type initialization",
+    "014 For Statement with missing to",
+    "015 For Statement with missing do",
+    "016 For Statement with missing assignment",
+    "017 For Statement with missing left boundaries",
+    "018 For Statement with missing right boundaries",
+    "020 While Statement wrong type condition",
+    "021 While Statement missing do",
+    "023 Repeat Statement wrong type condition",
+    "024 Repeat Statement missing until",
+    "029 Call with wrong type arguments",
+    "030 Call not a func or proc",
+    "031 Call proc with wrong number of params",
+    "033 Assign var with a call of wrong type",    
+    "035 Array worng number of indices",
+    "036 Try square bracket with non array",
+    "039 Assign var with record access of wrong type",
+};
+
+TEST_P(ScannerCheckTest, Check) { check(GetParam()); }
+INSTANTIATE_TEST_CASE_P(scannerCheck, ScannerCheckTest, VALUESIN(scannerCheckFiles));
+
+TEST_P(ScannerThrowTest, Throw) { check_throw(GetParam()); }
+INSTANTIATE_TEST_CASE_P(scannerThrow, ScannerThrowTest, VALUESIN(scannerThrowFiles));
+
+TEST_P(ParserExpTest, Check) { check(GetParam()); }
+INSTANTIATE_TEST_CASE_P(ParserExp, ParserExpTest, VALUESIN(parserCheckExpFiles));
+
+TEST_P(ParserExpThrowTest, CheckThrow) { check_throw(GetParam()); }
+INSTANTIATE_TEST_CASE_P(ParserExpThrow, ParserExpThrowTest, VALUESIN(parserCheckThrowExpFiles));
+
+TEST_P(ParserDeclTest, Check) { check(GetParam()); }
+INSTANTIATE_TEST_CASE_P(ParseDecl, ParserDeclTest, VALUESIN(parserCheckDeclFiles));
+
+TEST_P(ParserDeclThrowTest, Throw) { check_throw(GetParam()); }
+INSTANTIATE_TEST_CASE_P(ParseDecl, ParserDeclThrowTest, VALUESIN(parserCheckThrowDeclFiles));
+
+TEST_P(ParserStatementCheckTest, Check) { check(GetParam()); }
+INSTANTIATE_TEST_CASE_P(ParseStatement,ParserStatementCheckTest, VALUESIN(parserStatementCheckFiles));
+
+TEST_P(ParserStatementCheckThrowTest, Throw)  { check_throw(GetParam()); }
+INSTANTIATE_TEST_CASE_P(ParseStatement, ParserStatementCheckThrowTest, VALUESIN(parserStatementCheckThrowFiles));

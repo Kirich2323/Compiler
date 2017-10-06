@@ -1,0 +1,7 @@
+main
+----------
+char                     type 
+float                    type 
+integer                  type 
+sub                type alias  subrange 1..10
+a                         var             sub

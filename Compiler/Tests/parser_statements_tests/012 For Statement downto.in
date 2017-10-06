@@ -1,0 +1,7 @@
+var
+    a : integer;
+    b : integer = 10;
+begin
+    for a := 0 DownTo 10 do
+        b := b;
+end.

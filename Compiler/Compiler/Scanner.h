@@ -17,9 +17,11 @@ public:
     void next();
     std::string getTokenString();
     std::string getTokensString();
+    std::map<TokenType, std::string> getTokenNames();
     TokenPtr getToken() const;
     TokenPtr getNextToken();
     void expect(TokenType);
+    void expect(TokenPtr tok, TokenType type);
     ~Scanner();
 private:
     bool readChar();
@@ -50,10 +52,13 @@ private:
     void skipSingleLineComment();
     void skipMultiLineComment();
     void setToken(Token*);
-    template<class T> 
+    template<class T>
     void setToken();
     template<class T>
     void throwException();
+    std::string getTokenName(TokenPtr tok);
+    std::string getTokenName(TokenType type);    
+    void setTokenNames();
     std::string _fname;
     std::ifstream _fin;
     int _line = 1;
@@ -68,16 +73,15 @@ private:
     std::map<std::string, TokenType> _operations;
     std::map<std::string, TokenType> _delimiters;
     std::map<std::string, TokenType> _keywords;
+    std::map<TokenType, std::string> _tokenNames;
 };
 
 template<class T>
-inline void Scanner::setToken()
-{
+inline void Scanner::setToken() {
     setToken(new T(_tokenLine, _tokenCol, _charBuffer));
 }
 
 template<class T>
-inline void Scanner::throwException()
-{
+inline void Scanner::throwException() {
     throw T(_tokenLine, _tokenCol);
 }

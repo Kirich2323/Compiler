@@ -1,0 +1,5 @@
+type
+    myType = array [1..10] of integer;
+function name() : myType;
+begin
+end;

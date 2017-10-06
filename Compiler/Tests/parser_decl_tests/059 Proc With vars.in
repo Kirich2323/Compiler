@@ -1,0 +1,6 @@
+procedure name();
+var
+    a :integer;
+    b : float;
+begin
+end;

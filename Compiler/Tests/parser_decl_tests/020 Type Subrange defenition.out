@@ -1,0 +1,6 @@
+main
+----------
+char                     type 
+float                    type 
+integer                  type 
+mySubrangeType     type alias   subrange 1..2

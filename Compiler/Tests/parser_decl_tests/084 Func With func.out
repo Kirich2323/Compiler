@@ -1,0 +1,14 @@
+main
+----------
+char                     type 
+float                    type 
+integer                  type 
+name                     func 
+ arguments:
+    result            func result         integer
+ locals:
+    anothername              func 
+     arguments:
+        result            func result         integer
+     locals:
+

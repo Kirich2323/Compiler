@@ -1,0 +1,3 @@
+procedure name(a : integer);
+begin
+end;
