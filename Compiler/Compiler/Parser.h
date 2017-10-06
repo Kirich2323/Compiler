@@ -7,6 +7,7 @@
 #include "SynNode.h"
 #include "Symbol.h"
 #include "TypeChecker.h"
+#include "Const.h"
 
 enum class Priority {
     Lowest = 0,
@@ -26,8 +27,8 @@ public:
     void setSymbolCheck(bool isCheck);
 private:
 
-    typedef Const(Parser::*computeUnOp)(Const);
-    typedef Const(Parser::*computeBinOp)(Const, Const);
+    typedef Const(*computeUnOp)(Const);
+    typedef Const(*computeBinOp)(Const, Const);
 
     PNode parseExpr(int);
     PNode parseFactor();
@@ -69,26 +70,6 @@ private:
     double getFrac(double value);
     void expectType(SymbolType type, PNode expr, TokenPtr tok);
     //double ComputeUnaryOrd(double arg);
-    Const ComputeUnaryAddition(Const arg);
-    Const ComputeUnarySubtraction(Const arg);
-    Const ComputeUnaryNeagtion(Const arg);
-    Const ComputeBinaryMultiplication(Const left, Const right);
-    Const ComputeBinaryDivision(Const left, Const);
-    Const ComputeBinaryDiv(Const left, Const right);
-    Const ComputeBinaryMod(Const left, Const right);
-    Const ComputeBinaryAnd(Const left, Const right);
-    Const ComputeBinaryShl(Const left, Const right);
-    Const ComputeBinaryShr(Const left, Const right);
-    Const ComputeBinaryAddition(Const left, Const right);
-    Const ComputeBinarySubtraction(Const left, Const right);
-    Const ComputeBinaryOr(Const left, Const right);
-    Const ComputeBinaryXor(Const left, Const right);
-    Const ComputeBinaryEq(Const left, Const right);
-    Const ComputeBinaryNe(Const left, Const right);
-    Const ComputeBinaryLt(Const left, Const right);
-    Const ComputeBinaryGt(Const left, Const right);
-    Const ComputeBinaryLe(Const left, Const right);
-    Const ComputeBinaryGe(Const left, Const right);
     Const ComputeConstantExpression(PNode node);
 
     TokenPtr getToken();

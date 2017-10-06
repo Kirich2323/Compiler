@@ -38,24 +38,24 @@ Parser::Parser(const char* fname, bool isSymbolCheck) :
         }
     };
 
-    _computableUnOps[TokenType::Sub] = &Parser::ComputeUnarySubtraction;
-    _computableUnOps[TokenType::Not] = &Parser::ComputeUnaryNeagtion;
-    _computableUnOps[TokenType::Add] = &Parser::ComputeUnaryAddition;
+    _computableUnOps[TokenType::Sub] = &Const::ComputeUnarySubtraction;
+    _computableUnOps[TokenType::Not] = &Const::ComputeUnaryNeagtion;
+    _computableUnOps[TokenType::Add] = &Const::ComputeUnaryAddition;
 
-    _computableBinOps[TokenType::Sub] = &Parser::ComputeBinarySubtraction;
-    _computableBinOps[TokenType::Add] = &Parser::ComputeBinaryAddition;
-    _computableBinOps[TokenType::Mul] = &Parser::ComputeBinaryMultiplication;
-    _computableBinOps[TokenType::Div] = &Parser::ComputeBinaryDiv;
-    _computableBinOps[TokenType::DivReal] = &Parser::ComputeBinaryDivision;
-    _computableBinOps[TokenType::Equal] = &Parser::ComputeBinaryEq;
-    _computableBinOps[TokenType::NotEqual] = &Parser::ComputeBinaryNe;
-    _computableBinOps[TokenType::Greater] = &Parser::ComputeBinaryGt;
-    _computableBinOps[TokenType::Less] = &Parser::ComputeBinaryLt;
-    _computableBinOps[TokenType::GreaterEqual] = &Parser::ComputeBinaryGe;
-    _computableBinOps[TokenType::LessEqual] = &Parser::ComputeBinaryLe;
-    _computableBinOps[TokenType::And] = &Parser::ComputeBinaryAnd;
-    _computableBinOps[TokenType::Or] = &Parser::ComputeBinaryOr;
-    _computableBinOps[TokenType::Xor] = &Parser::ComputeBinaryXor;
+    _computableBinOps[TokenType::Sub] = &Const::ComputeBinarySubtraction;
+    _computableBinOps[TokenType::Add] = &Const::ComputeBinaryAddition;
+    _computableBinOps[TokenType::Mul] = &Const::ComputeBinaryMultiplication;
+    _computableBinOps[TokenType::Div] = &Const::ComputeBinaryDiv;
+    _computableBinOps[TokenType::DivReal] = &Const::ComputeBinaryDivision;
+    _computableBinOps[TokenType::Equal] = &Const::ComputeBinaryEq;
+    _computableBinOps[TokenType::NotEqual] = &Const::ComputeBinaryNe;
+    _computableBinOps[TokenType::Greater] = &Const::ComputeBinaryGt;
+    _computableBinOps[TokenType::Less] = &Const::ComputeBinaryLt;
+    _computableBinOps[TokenType::GreaterEqual] = &Const::ComputeBinaryGe;
+    _computableBinOps[TokenType::LessEqual] = &Const::ComputeBinaryLe;
+    _computableBinOps[TokenType::And] = &Const::ComputeBinaryAnd;
+    _computableBinOps[TokenType::Or] = &Const::ComputeBinaryOr;
+    _computableBinOps[TokenType::Xor] = &Const::ComputeBinaryXor;
 
     _symTables->top()->add(SymbolPtr(new SymType(SymbolType::TypeChar, "char")));
     _symTables->top()->add(SymbolPtr(new SymType(SymbolType::TypeReal, "float")));
@@ -291,16 +291,16 @@ PNode Parser::parseRepeatStatement() {
     return PNode(new RepeatNode(cond, body));
 }
 
-PNode Parser::parseCall(PNode expr) {
-    TokenPtr tok = getToken();
-    _scanner.next();
-    if (tok->getType() == TokenType::OpeningParenthesis) {
-        _scanner.next();
-        std::vector<PNode> args = parseCommaSeparated();
-        expr = PNode(new CallNode(expr, args, _symTables->getSymbol(tok)));
-    }
-    return expr;
-}
+//PNode Parser::parseCall(PNode expr) {
+//    TokenPtr tok = getToken();
+//    _scanner.next();
+//    if (tok->getType() == TokenType::OpeningParenthesis) {
+//        _scanner.next();
+//        std::vector<PNode> args = parseCommaSeparated();
+//        expr = PNode(new CallNode(expr, args, _symTables->getSymbol(tok)));
+//    }
+//    return expr;
+//}
 
 PNode Parser::parseIdentifierStatement() {
     PNode expr = parseExpr(0);
@@ -686,86 +686,6 @@ void Parser::expectType(SymbolType type, PNode expr, TokenPtr tok) {
         throw BadType(tok->getLine(), tok->getCol(), _typeChecker.typeNames[varType], _typeChecker.typeNames[type]);
 }
 
-Const Parser::ComputeUnaryAddition(Const arg) {
-    return arg;
-}
-
-Const Parser::ComputeUnarySubtraction(Const arg) {
-    return -arg;
-}
-
-Const Parser::ComputeUnaryNeagtion(Const arg) {
-    return !arg;
-}
-
-Const Parser::ComputeBinaryMultiplication(Const left, Const right) {
-    return left * right;
-}
-
-Const Parser::ComputeBinaryDivision(Const left, Const right) {
-    return left / right;
-}
-
-Const Parser::ComputeBinaryDiv(Const left, Const right) {
-    return left / right;
-}
-
-Const Parser::ComputeBinaryMod(Const left, Const right) {
-    return left % right;
-}
-
-Const Parser::ComputeBinaryAnd(Const left, Const right) {
-    return left & right;
-}
-
-Const Parser::ComputeBinaryShl(Const left, Const right) {
-    return left << right;
-}
-
-Const Parser::ComputeBinaryShr(Const left, Const right) {
-    return left >> right;
-}
-
-Const Parser::ComputeBinaryAddition(Const left, Const right) {
-    return left + right;
-}
-
-Const Parser::ComputeBinarySubtraction(Const left, Const right) {
-    return left - right;
-}
-
-Const Parser::ComputeBinaryOr(Const left, Const right) {
-    return left | right;
-}
-
-Const Parser::ComputeBinaryXor(Const left, Const right) {
-    return left ^ right;
-}
-
-Const Parser::ComputeBinaryEq(Const left, Const right) {
-    return left == right;
-}
-
-Const Parser::ComputeBinaryNe(Const left, Const right) {
-    return left != right;
-}
-
-Const Parser::ComputeBinaryLt(Const left, Const right) {
-    return left < right;
-}
-
-Const Parser::ComputeBinaryGt(Const left, Const right) {
-    return left > right;
-}
-
-Const Parser::ComputeBinaryLe(Const left, Const right) {
-    return left <= right;
-}
-
-Const Parser::ComputeBinaryGe(Const left, Const right) {
-    return left >= right;
-}
-
 exprType castTypes(exprType left, exprType right) {
     if (left == right)
         return left;
@@ -782,13 +702,13 @@ Const Parser::ComputeConstantExpression(PNode node) {
         auto it = _computableUnOps.find(std::dynamic_pointer_cast<OpNode>(node)->getOpType());
         if (it == _computableUnOps.end())
             throw InvalidExpression(getToken()->getLine(), getToken()->getCol());
-        return  (this->*(it->second))(ComputeConstantExpression(std::dynamic_pointer_cast<UnaryNode>(node)->getArg()));
+        return  (*(it->second))(ComputeConstantExpression(std::dynamic_pointer_cast<UnaryNode>(node)->getArg()));
     }
     else if (*node == SynNodeType::BinaryOp) {
         auto it = _computableBinOps.find(std::dynamic_pointer_cast<OpNode>(node)->getOpType());
         if (it == _computableBinOps.end())
             throw InvalidExpression(getToken()->getLine(), getToken()->getCol());
-        return (this->*(it->second))(ComputeConstantExpression(std::dynamic_pointer_cast<BinOpNode>(node)->getLeft()),
+        return (*(it->second))(ComputeConstantExpression(std::dynamic_pointer_cast<BinOpNode>(node)->getLeft()),
                                      ComputeConstantExpression(std::dynamic_pointer_cast<BinOpNode>(node)->getRight()));
     }
     else if (*node == SynNodeType::RealNumber) {

@@ -7,6 +7,7 @@
 #include <iomanip>
 #include "Token.h"
 #include "error.h"
+#include "Const.h"
 
 enum class SymbolType {
     TypeAlias,
@@ -31,41 +32,6 @@ enum class SymbolType {
     Param,
     VarParam,
     None,
-};
-
-enum exprType {
-    Real,
-    Integer,
-};
-
-typedef long long i64;
-
-struct Const {
-    Const(exprType type, double value);
-    template<class T>
-    T getValue() {
-        return T(value);
-    }
-    exprType type;
-    double value;
-    Const operator == (Const right);
-    Const operator < (Const right);
-    Const operator > (Const right);
-    Const operator <= (Const right);
-    Const operator >= (Const right);
-    Const operator != (Const right);
-    Const operator ! ();
-    Const operator % (Const right);
-    Const operator + (Const right);
-    Const operator - (Const right);
-    Const operator * (Const right);
-    Const operator / (Const right);
-    Const operator - ();
-    Const operator & (Const right);
-    Const operator ^ (Const right);
-    Const operator | (Const right);
-    Const operator >> (Const val);
-    Const operator << (Const val);
 };
 
 class Symbol {
