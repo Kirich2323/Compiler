@@ -1,0 +1,5 @@
+begin
+    writeln(10);
+    writeln();
+    write(20);
+end.

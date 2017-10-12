@@ -77,27 +77,11 @@ enum class TokenType {
     String,
     Delimiter,
     Operation,
-    EndOfFile
-};
+    EndOfFile,
 
-//std::map<TokenType, std::string> tokenTypeStrings = {
-//    { TokenType::Add,           "Operation: Addition" },
-//    { TokenType::AddAssignment, "Operation: Addition-assigment" },
-//    { TokenType::Sub,           "Operation: Subtraction" },
-//    { TokenType::SubAssignment, "Operation: Subtraction-assigment" },
-//    { TokenType::Mul,           "Operation: Multiplication" },
-//    { TokenType::MulAssignment, "Operation: Multiplication-assigment" },
-//    { TokenType::Div,           "Operation: Divition" },
-//    { TokenType::DivAssignment, "Operation: Divition-assigment" },
-//    { TokenType::Assigment,     "Operation: Assigment" },
-//    { TokenType::Equal,         "Operation: Equal" },
-//    { TokenType::Less,          "Operation: Less" },
-//    { TokenType::LessEqual,     "Operation: LessEqual" },
-//    { TokenType::Greater,       "Operation: Greater" },
-//    { TokenType::GreaterEqual,  "Operation: GreaterEqual" },
-//    { TokenType::NotEqual,      "Operation: Not equal" },
-//    { TokenType::Hat,           "Operation: Hat" },
-//};
+    Write,
+    Writeln
+};
 
 class Token {
 public:

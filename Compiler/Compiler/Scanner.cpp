@@ -75,6 +75,8 @@ _keywords({
     { "var",       TokenType::Var },
     { "while",     TokenType::While },
     { "xor",       TokenType::Xor },
+    { "write",     TokenType::Write },
+    { "writeln",   TokenType::Writeln }
 }) {
     if (_fin.fail())
         throw MissingFile(fname);

@@ -1,0 +1,9 @@
+function square(a : integer) : integer;
+begin
+result := a * a;
+end;
+var
+    a : integer = 15;
+begin
+    write(square(a));
+end.

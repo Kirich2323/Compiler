@@ -1,0 +1,8 @@
+var
+    a : integer = 1;
+begin
+while(a <= 10) do begin
+    writeln(a);
+    a := a + 1;
+end;
+end.

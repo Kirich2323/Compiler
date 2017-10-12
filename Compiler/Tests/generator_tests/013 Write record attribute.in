@@ -1,0 +1,10 @@
+type
+rec = record
+    a : integer;
+end;
+var
+    a : rec;
+begin
+    a.a := 122;
+    write(a.a);
+end.

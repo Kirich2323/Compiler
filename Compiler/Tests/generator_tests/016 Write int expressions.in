@@ -1,0 +1,17 @@
+begin
+writeln(1 + 1);         // 2
+writeln(2 - 3 - 4);     // -5
+writeln(1 div 1);       // 1
+writeln(3 div 1);       // 3
+writeln(3 div 2);       // 1
+writeln(3 mod 2);       // 1
+writeln(10 mod 5);      // 0
+writeln(10 * 3);        // 30
+writeln(10 * 10 * 10);  // 1000
+writeln(10 and 10);     // 10
+writeln(10 and 100);    // 0
+writeln(10 xor 10);     // 0
+writeln(20 or 10);      // 30
+writeln(1 shl 9);       // 512
+write(512 shr 2);       // 128
+end.

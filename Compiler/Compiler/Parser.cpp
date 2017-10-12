@@ -4,7 +4,8 @@ Parser::Parser(const char* fname, bool isSymbolCheck) :
     _progName("main"),
     _scanner(fname),
     _symTables(SymTableStackPtr(new SymTableStack(SymTablePtr(new SymTable())))),
-    _isSymbolCheck(isSymbolCheck) {
+    _isSymbolCheck(isSymbolCheck),
+    _code() {
 
     _scanner.next();
     _priorityTable = {
@@ -57,9 +58,9 @@ Parser::Parser(const char* fname, bool isSymbolCheck) :
     _computableBinOps[TokenType::Or] = &Const::ComputeBinaryOr;
     _computableBinOps[TokenType::Xor] = &Const::ComputeBinaryXor;
 
-    _symTables->top()->add(SymbolPtr(new SymType(SymbolType::TypeChar, "char")));
-    _symTables->top()->add(SymbolPtr(new SymType(SymbolType::TypeReal, "float")));
-    _symTables->top()->add(SymbolPtr(new SymType(SymbolType::TypeInteger, "integer")));
+    _symTables->top()->add(SymbolPtr(new SymType(SymbolType::TypeChar, "char", 1)));
+    _symTables->top()->add(SymbolPtr(new SymType(SymbolType::TypeReal, "float", 8)));
+    _symTables->top()->add(SymbolPtr(new SymType(SymbolType::TypeInteger, "integer", 8)));
 
     _typeChecker = TypeChecker(SymTableStackPtr(_symTables));
 }
@@ -79,6 +80,30 @@ std::string Parser::getProgStr() {
 
 std::string Parser::getStmtStr() {
     return parse()->toString("", true);
+}
+
+std::string Parser::getAsmStr() {
+    parse();
+    for (auto symbol : _symTables->top()->getSymbols()) {
+        symbol->generateDecl(_code);
+        if (symbol->getType() == SymbolType::Proc || symbol->getType() == SymbolType::Func)
+            generateProc(symbol, 0);
+    }
+    _code.addLabel(std::string("main"));
+    _root->generate(_code);
+    std::ofstream tmp("tmp.asm");
+    tmp << _code.toString();
+    tmp.close();
+    system("nasm -f win64 tmp.asm -o tmp.o");
+    system("gcc tmp.o -o tmp.exe");
+    system("tmp.exe > tmp.out");
+    //system("run_asm.bat");
+    std::ifstream sout("tmp.out");
+    std::string out;
+    out = std::string(std::istreambuf_iterator<char>(sout),
+                      std::istreambuf_iterator<char>());
+    sout.close();
+    return out;
 }
 
 PNode Parser::parseExpr(int priority) {
@@ -112,6 +137,9 @@ PNode Parser::parseFactor() {
         case TokenType::RealNumber:
             _scanner.next();
             return PNode(new RealConstNode(std::stod(t->getValue())));
+        case TokenType::String:
+            _scanner.next();
+            return PNode(new StringConstNode(t->getValue()));
         case TokenType::OpeningParenthesis:
         {
             _scanner.next();
@@ -147,8 +175,8 @@ PNode Parser::parseIdentifier(bool isRecursive) {
                     SymTypeRecordPtr rec = std::dynamic_pointer_cast<SymTypeRecord>(attr);
                     if (!rec->have(t->getText()))
                         throw NoMember(t->getLine(), t->getCol(), t->getText());
+                    result = PNode(new RecordAccessNode(result, right, sym));
                     sym = rec->getSymbol(t->getText());
-                    result = PNode(new RecordAccessNode(result, right, attr));
                 }
                 else
                     result = PNode(new RecordAccessNode(result, parseIdentifier(false)));
@@ -156,6 +184,8 @@ PNode Parser::parseIdentifier(bool isRecursive) {
             }
             case TokenType::OpeningSquareBracket:
             {
+                //_scanner.next();
+                //std::vector<PNode> args = getArgsArray(TokenType::ClosingParenthesis);
                 std::vector<PNode> args = parseCommaSeparated();
                 if (_isSymbolCheck)
                     if (sym->getVarType() != SymbolType::TypeArray ||
@@ -167,10 +197,11 @@ PNode Parser::parseIdentifier(bool isRecursive) {
             }
             case TokenType::OpeningParenthesis:
             {
+                auto tmp = sym->getType();
                 if (sym->getType() != SymbolType::Func && sym->getType() != SymbolType::Proc) {
                     isRecursive = false;
                     break;
-                }                
+                }
                 _scanner.next();
                 std::vector<PNode> args = getArgsArray(TokenType::ClosingParenthesis);
                 std::vector<SymbolPtr> procArgs = std::dynamic_pointer_cast<SymProcBase>(sym)->getArgs()->getSymbols();
@@ -200,6 +231,10 @@ PNode Parser::parseStatement() {
         case TokenType::Repeat: statement = parseRepeatStatement(); break;
         case TokenType::Semicolon: statement = PNode(new EmptyNode()); break;
         case TokenType::End: statement = PNode(new EmptyNode()); break;
+        case TokenType::Write: statement = parseWrite(); break;
+        case TokenType::Writeln: statement = parseWriteln(); break;
+        case TokenType::Break: statement = parseBreak(); break;
+        case TokenType::Continue: statement = parseContinue(); break;
         default: statement = parseExpr(0);
     }
     return statement;
@@ -220,7 +255,7 @@ PNode Parser::parseCompoundStatement(std::string name) {
 void Parser::parseStatementSequence(BlockNode* block) {
     do {
         _scanner.next();
-        if (getToken()->getType() != TokenType::End)
+        if (getToken()->getType() != TokenType::End && getToken()->getType() != TokenType::Until)
             block->addStatement(parseStatement());
     } while (getToken()->getType() == TokenType::Semicolon);
 }
@@ -280,27 +315,17 @@ PNode Parser::parseForStatement() {
 }
 
 PNode Parser::parseRepeatStatement() {
-    _scanner.next();
-    PNode body = parseStatement();
+    //_scanner.next();
+    BlockNode* body = new BlockNode("repeat block");
+    parseStatementSequence(body);
     if (getToken()->getType() == TokenType::Semicolon)
         _scanner.next();
     _scanner.expect(TokenType::Until);
     TokenPtr tok = getNextToken();
     PNode cond = parseExpr(0);
     expectType(SymbolType::TypeBoolean, cond, tok);
-    return PNode(new RepeatNode(cond, body));
+    return PNode(new RepeatNode(cond, PNode(body)));
 }
-
-//PNode Parser::parseCall(PNode expr) {
-//    TokenPtr tok = getToken();
-//    _scanner.next();
-//    if (tok->getType() == TokenType::OpeningParenthesis) {
-//        _scanner.next();
-//        std::vector<PNode> args = parseCommaSeparated();
-//        expr = PNode(new CallNode(expr, args, _symTables->getSymbol(tok)));
-//    }
-//    return expr;
-//}
 
 PNode Parser::parseIdentifierStatement() {
     PNode expr = parseExpr(0);
@@ -331,14 +356,13 @@ std::vector<PNode> Parser::getArgsArray(TokenType terminatingType) {
             throw InvalidExpression(getToken()->getLine(), getToken()->getCol());
         indices.push_back(parseExpr(0));
     }
-    _scanner.next();
     return indices;
 }
 
 SymbolPtr Parser::parseRecord() {
     _symTables->addTable(SymTablePtr(new SymTable()));
     if (getToken()->getType() == TokenType::Identifier)
-        parseVarDeclaration(true);
+        parseVarDeclaration(false);
     SymbolPtr record = SymbolPtr(new SymTypeRecord(_symTables->top()));
     _symTables->pop();
     _scanner.expect(TokenType::End);
@@ -406,6 +430,7 @@ PNode Parser::parse() {
     parseDeclaration(0, true);
     _scanner.expect(TokenType::Begin);
     PNode stmt = parseCompoundStatement("main block");
+    _root = stmt;
     _scanner.expect(TokenType::Dot);
     return stmt;
 }
@@ -586,6 +611,54 @@ void Parser::parseProcDeclaration(int depth) {
     _symTables->pop();
 }
 
+void Parser::generateProc(SymbolPtr symbol, int depth) {
+    SymProcBasePtr proc = std::dynamic_pointer_cast<SymProcBase>(symbol);
+    _code.addLabel(symbol->getName() + std::to_string(proc->getDepth()));
+    _code.addCmd(PUSH, RBP);
+    _code.addCmd(MOV, RBP, RSP);
+    _code.addCmd(SUB, RSP, proc->getLocals()->getSize());
+    _procedureBodies[symbol]->generate(_code);
+    _code.addCmd(MOV, RSP, RBP);
+    _code.addCmd(POP, RBP);
+    _code.addCmd(RET);
+    for (auto sym : proc->getLocals()->getSymbols()) {
+        if (sym->getName() == "write" && sym->getName() == "writeln") {
+            throw "Error"; //todo, maybe replace
+        }
+        if (sym->getType() == SymbolType::Proc || sym->getType() == SymbolType::Func) {
+            generateProc(sym, depth + 1);
+        }
+    }
+}
+
+PNode Parser::parseWrite() {
+    _scanner.next();
+    _scanner.expect(TokenType::OpeningParenthesis);
+    _scanner.next();
+    std::vector<PNode> args = getArgsArray(TokenType::ClosingParenthesis);
+    _scanner.next();
+    return PNode(new WriteNode(PNode(new IdentifierNode("write", nullptr)), args));
+}
+
+PNode Parser::parseWriteln() {
+    _scanner.next();
+    _scanner.expect(TokenType::OpeningParenthesis);
+    _scanner.next();
+    std::vector<PNode> args = getArgsArray(TokenType::ClosingParenthesis);
+    _scanner.next();
+    return PNode(new WritelnNode(PNode(new IdentifierNode("writeln", nullptr)), args));
+}
+
+PNode Parser::parseBreak() {
+    _scanner.next();
+    return PNode(new BreakNode());
+}
+
+PNode Parser::parseContinue() {
+    _scanner.next();
+    return PNode(new ContinueNode());
+}
+
 SymbolPtr Parser::parseType() {
     TokenPtr token = getToken();
     SymbolPtr type;
@@ -686,16 +759,8 @@ void Parser::expectType(SymbolType type, PNode expr, TokenPtr tok) {
         throw BadType(tok->getLine(), tok->getCol(), _typeChecker.typeNames[varType], _typeChecker.typeNames[type]);
 }
 
-exprType castTypes(exprType left, exprType right) {
-    if (left == right)
-        return left;
-    else {
-        return exprType::Real;
-    }
-}
-
 Const Parser::ComputeConstantExpression(PNode node) {
-    if (*node == SynNodeType::RecordAcces || *node == SynNodeType::ArrayIndex)
+    if (*node == SynNodeType::RecordAccess || *node == SynNodeType::ArrayIndex)
         throw InvalidExpression(getToken()->getLine(), getToken()->getCol());
 
     if (*node == SynNodeType::UnaryOp) {
@@ -709,7 +774,7 @@ Const Parser::ComputeConstantExpression(PNode node) {
         if (it == _computableBinOps.end())
             throw InvalidExpression(getToken()->getLine(), getToken()->getCol());
         return (*(it->second))(ComputeConstantExpression(std::dynamic_pointer_cast<BinOpNode>(node)->getLeft()),
-                                     ComputeConstantExpression(std::dynamic_pointer_cast<BinOpNode>(node)->getRight()));
+                               ComputeConstantExpression(std::dynamic_pointer_cast<BinOpNode>(node)->getRight()));
     }
     else if (*node == SynNodeType::RealNumber) {
         return Const(exprType::Real, std::dynamic_pointer_cast<RealConstNode>(node)->getValue());
@@ -728,11 +793,6 @@ Const Parser::ComputeConstantExpression(PNode node) {
                 throw InvalidExpression(getToken()->getLine(), getToken()->getCol());
         }
     }
-}
-
-
-PNode Parser::parseJumpStatement() {
-    return PNode();
 }
 
 TokenPtr Parser::getToken() {
@@ -767,104 +827,4 @@ bool Parser::checkSymbolType(SymbolPtr symbol, SymbolType expectedType, TokenPtr
         throw "Expected error";
     }
     return true;
-}
-
-Const::Const(exprType type, double value) : type(type), value(value) {}
-
-Const Const::operator==(Const right) {
-    return Const(exprType::Integer, value == right.value);
-}
-
-Const Const::operator<(Const right) {
-    return Const(exprType::Integer, value < right.value);
-}
-
-Const Const::operator>(Const right) {
-    if (type != right.type && type != exprType::Integer)
-        throw "Bad type"; //todo
-    return Const(type, (double)((i64)value > (i64)right.value));
-}
-
-Const Const::operator<=(Const right) {
-    if (type != right.type && type != exprType::Integer)
-        throw "Bad type"; //todo
-    return Const(type, (double)((i64)value <= (i64)right.value));
-}
-
-Const Const::operator>=(Const right) {
-    if (type != right.type && type != exprType::Integer)
-        throw "Bad type"; //todo
-    return Const(type, (double)((i64)value >= (i64)right.value));
-}
-
-Const Const::operator!=(Const right) {
-    if (type != right.type && type != exprType::Integer)
-        throw "Bad type"; //todo
-    return Const(type, (double)((i64)value != (i64)right.value));
-}
-
-Const Const::operator!() {
-    if (type != exprType::Integer)
-        throw "Bad type"; //todo
-    return Const(type, (double)(!((i64)value)));
-}
-
-Const Const::operator%(Const right) {
-    if (type != right.type && type != exprType::Integer)
-        throw "Bad type"; //todo
-    return Const(type, (double)((i64)value % (i64)right.value));
-}
-
-Const Const::operator+(Const right) {
-    return Const(castTypes(type, right.type), value + right.value);
-}
-
-Const Const::operator-(Const right) {
-    return Const(castTypes(type, right.type), value - right.value);
-}
-
-Const Const::operator*(Const right) {
-    return Const(castTypes(type, right.type), value * right.value);
-}
-
-Const Const::operator/(Const right) {
-    exprType _type = castTypes(type, right.type);
-    double val = value / right.value;
-    if (_type == exprType::Integer)
-        val = (double)(int)val;
-    return Const(_type, val);
-}
-
-Const Const::operator-() {
-    return Const(type, -value);
-}
-
-Const Const::operator&(Const right) {
-    if (type != right.type && type != exprType::Integer)
-        throw "Bad type"; //todo
-    return Const(type, (double)((i64)value & (i64)right.value));
-}
-
-Const Const::operator^(Const right) {
-    if (type != right.type && type != exprType::Integer)
-        throw "Bad type"; //todo
-    return Const(type, (double)((i64)value ^ (i64)right.value));
-}
-
-Const Const::operator|(Const right) {
-    if (type != right.type && type != exprType::Integer)
-        throw "Bad type"; //todo
-    return Const(type, (double)((i64)value | (i64)right.value));
-}
-
-Const Const::operator >> (Const right) {
-    if (type != right.type && type != exprType::Integer)
-        throw "Bad type"; //todo
-    return Const(type, (double)((i64)value >> (i64)right.value));
-}
-
-Const Const::operator<<(Const right) {
-    if (type != right.type && type != exprType::Integer)
-        throw "Bad type"; //todo
-    return Const(type, (double)((i64)value << (i64)right.value));
 }

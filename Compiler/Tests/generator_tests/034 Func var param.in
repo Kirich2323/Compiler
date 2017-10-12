@@ -1,0 +1,12 @@
+function f(var a : integer) : integer;
+begin
+    a := 2;
+    result := a;
+end;
+var
+    a : integer = 1;
+begin
+    writeln(a);
+    writeln(f(a));
+    write(a);
+end.

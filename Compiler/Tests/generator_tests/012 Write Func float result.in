@@ -1,0 +1,9 @@
+function f(a : float) : float;
+begin
+result := -a;
+end;
+var
+    a : float = 0.12;
+begin
+    write(f(a));
+end.

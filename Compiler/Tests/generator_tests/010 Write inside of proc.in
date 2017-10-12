@@ -1,0 +1,7 @@
+procedure f();
+begin
+    write(101);
+end;
+begin
+    f();
+end.

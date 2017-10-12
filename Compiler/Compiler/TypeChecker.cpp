@@ -38,12 +38,20 @@ std::unordered_map <SymbolType, std::unordered_map<TokenType, SymbolType> > opTy
             { TokenType::LessEqual,    SymbolType::TypeBoolean },
             { TokenType::Equal,        SymbolType::TypeBoolean },
        }
+    },
+    { SymbolType::TypeBoolean,
+        {
+            { TokenType::And,          SymbolType::TypeBoolean },
+            { TokenType::Or,           SymbolType::TypeBoolean },
+            { TokenType::Xor,          SymbolType::TypeBoolean },
+        }
     }
 };
 
 std::unordered_map<SymbolType, std::set<SymbolType>> typeCasts = {
-    { SymbolType::TypeInteger, { SymbolType::TypeInteger, SymbolType::TypeReal } },
+    { SymbolType::TypeInteger, { SymbolType::TypeInteger, SymbolType::TypeReal, SymbolType::TypeBoolean } },
     { SymbolType::TypeReal, { SymbolType::TypeReal } },
+    { SymbolType::TypeBoolean,{ SymbolType::TypeBoolean } },
 };
 
 SymbolType TypeChecker::getExprType(PNode exp) {
@@ -78,8 +86,8 @@ SymbolType TypeChecker::getExprType(PNode exp) {
             if (sym->getType() == SymbolType::Func)
                 return std::dynamic_pointer_cast<SymProcBase>(sym)->getArgs()->getSymbols().back()->getVarType();
         }
-        case SynNodeType::RecordAcces:
-            while (exp->getNodeType() == SynNodeType::RecordAcces)
+        case SynNodeType::RecordAccess:
+            while (exp->getNodeType() == SynNodeType::RecordAccess)
                 exp = std::dynamic_pointer_cast<RecordAccessNode>(exp)->getRight();
             if (exp->getNodeType() == SynNodeType::Identifier)
                 return getExprType(exp);
@@ -92,9 +100,7 @@ SymbolType TypeChecker::getExprType(PNode exp) {
 SymbolType TypeChecker::getExprType(SynNodeType type) {
     switch (type) {
         case SynNodeType::IntegerNumber: return SymbolType::TypeInteger;
-        case SynNodeType::RealNumber: return SymbolType::TypeReal; //todo add more types            
-        default:
-            ; //throw InvalidExpression();??
+        case SynNodeType::RealNumber: return SymbolType::TypeReal;            
     }
 }
 

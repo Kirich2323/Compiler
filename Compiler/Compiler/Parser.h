@@ -2,7 +2,7 @@
 
 #include <vector>
 #include <set>
-//#include <map>
+#include <fstream>
 #include "Scanner.h"
 #include "SynNode.h"
 #include "Symbol.h"
@@ -23,6 +23,7 @@ public:
     std::string getDeclStr();
     std::string getProgStr();
     std::string getStmtStr();
+    std::string getAsmStr();
     std::vector<PNode> parseCommaSeparated();
     void setSymbolCheck(bool isCheck);
 private:
@@ -35,25 +36,25 @@ private:
     PNode parseIdentifier(bool = true);
 
     PNode parseStatement();
-    PNode parseCompoundStatement(std::string name);
-    void parseStatementSequence(BlockNode* block);
+    PNode parseCompoundStatement(std::string name);   
 
     PNode parseWhileStatement();
     PNode parseIfStatement();
     PNode parseForStatement();
-    PNode parseJumpStatement();
     PNode parseRepeatStatement();
-    PNode parseCall(PNode expr);
     PNode parseIdentifierStatement();
+    PNode parseWrite();
+    PNode parseWriteln();
+    PNode parseBreak();
+    PNode parseContinue();
+    PNode parse();
     std::vector<PNode> getArgsArray(TokenType terminatingType);
 
     SymbolPtr parseRecord();
     SymbolPtr parseArray();
     SymbolPtr parseSubrange();
     SymbolPtr parsePointer();
-    SymbolPtr parseConst(std::string identifier = "");
-
-    PNode parse();
+    SymbolPtr parseConst(std::string identifier = "");    
 
     void parseDeclaration(int depth, bool isGlobal);
     void parseVarDeclaration(bool isGlobal);
@@ -61,6 +62,8 @@ private:
     void parseTypeDeclaration();
     void parseFuncDeclaration(int depth);
     void parseProcDeclaration(int depth);
+    void generateProc(SymbolPtr symbol, int depth);
+    void parseStatementSequence(BlockNode* block);
     SymbolPtr parseType();
     SymTablePtr parseParams(SymbolPtr proc);
     SymTablePtr parseProcBody(SymbolPtr proc, int depth);
@@ -69,13 +72,12 @@ private:
 
     double getFrac(double value);
     void expectType(SymbolType type, PNode expr, TokenPtr tok);
-    //double ComputeUnaryOrd(double arg);
     Const ComputeConstantExpression(PNode node);
 
     TokenPtr getToken();
     TokenPtr getNextToken();
     bool checkPriority(int, TokenType);
-    bool checkSymbolType(SymbolPtr symbol, SymbolType expectedType, TokenPtr token);    
+    bool checkSymbolType(SymbolPtr symbol, SymbolType expectedType, TokenPtr token);
 
     std::string _progName;
     std::vector<std::set<TokenType>> _priorityTable;
@@ -86,4 +88,6 @@ private:
     SymTableStackPtr _symTables;
     bool _isSymbolCheck;
     TypeChecker _typeChecker;
+    AsmCode _code;
+    PNode _root;
 };

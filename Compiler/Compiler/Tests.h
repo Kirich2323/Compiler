@@ -6,6 +6,7 @@
 #include "gtest\gtest-param-test.h"
 #include "Scanner.h"
 #include "Parser.h"
+#include "AsmGen.h"
 //#include "Symbol.h"
 
 template<class T>
@@ -39,9 +40,9 @@ protected:
     std::string testing;
 };
 
-class ScannerBaseTest : public BaseTest<Scanner> {   
+class ScannerBaseTest : public BaseTest<Scanner> {
     std::string getPath() override { return "../Tests/scanner_tests/"; }
-    std::string getData(Scanner& obj) override { return obj.getTokensString(); } 
+    std::string getData(Scanner& obj) override { return obj.getTokensString(); }
 };
 class ScannerCheckTest : public ScannerBaseTest {};
 class ScannerThrowTest : public ScannerBaseTest {};
@@ -56,7 +57,7 @@ class ParserExpThrowTest : public ParserExprBaseTest {};
 
 class ParserDeclBaseTest : public BaseTest<Parser> {
     std::string getPath() override { return "../Tests/parser_decl_tests/"; }
-    std::string getData(Parser& obj) override { return obj.getDeclStr(); }    
+    std::string getData(Parser& obj) override { return obj.getDeclStr(); }
 };
 class ParserDeclTest : public ParserDeclBaseTest {};
 class ParserDeclThrowTest : public ParserDeclBaseTest {};
@@ -67,3 +68,10 @@ class ParserStatementBaseTest : public BaseTest<Parser> {
 };
 class ParserStatementCheckTest : public ParserStatementBaseTest {};
 class ParserStatementCheckThrowTest : public ParserStatementBaseTest {};
+
+class GeneratorBaseTest : public BaseTest<Parser> {
+    std::string getPath() override { return "../Tests/generator_tests/"; }
+    std::string getData(Parser& obj) override { return obj.getAsmStr(); }
+};
+
+class GeneratorCheckTest : public GeneratorBaseTest {};

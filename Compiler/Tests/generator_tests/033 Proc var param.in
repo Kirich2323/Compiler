@@ -1,0 +1,11 @@
+procedure f(var a : integer);
+begin
+    a := 2;
+end;
+var
+    a : integer = 1;
+begin
+    writeln(a);
+    f(a);
+    write(a);
+end.

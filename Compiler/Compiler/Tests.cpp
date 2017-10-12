@@ -82,7 +82,7 @@ std::vector<std::string> parserCheckExpFiles = {
     "037CombinationOfRecordAccesAndArrayIndeces1",
     "038CombinationOfRecordAccesAndArrayIndeces2",
     "039ComplexExpression1",
-    "040ComplexExpression2"
+    "040ComplexExpression2",    
 };
 std::vector<std::string> parserCheckThrowExpFiles = {
     "000UnexpectedEndOfFile",
@@ -201,6 +201,7 @@ std::vector<std::string> parserStatementCheckFiles = {
     "034 Assign var with array",
     "037 Assign var with record access",
     "038 Assign var with several records access",
+    "040 Write string",
 };
 std::vector<std::string> parserStatementCheckThrowFiles = {
     "002 Assignment Wrong Type",
@@ -227,6 +228,44 @@ std::vector<std::string> parserStatementCheckThrowFiles = {
     "039 Assign var with record access of wrong type",
 };
 
+std::vector<std::string> generatorCheckFiles = {
+    "000 Empty",
+    "001 Write int",
+    "002 Write string",
+    "003 Write several ints",
+    "004 Var assign",
+    "005 Write float",
+    "006 Write int var",
+    "007 Write float var",
+    "008 Write int array element",
+    "009 Write float array element",
+    "010 Write inside of proc",
+    "011 Write Func int result",
+    "012 Write Func float result",
+    "013 Write record attribute",
+    "014 Write several records access",
+    "015 Writeln",
+    "016 Write int expressions",
+    "017 Write real expressions",
+    "018 If then",
+    "019 Int relation operations",
+    "020 If logical operations",
+    "021 Float realion operations",
+    "022 If then else",
+    "023 While loop",
+    "024 Repeat loop",
+    "025 For loop to",
+    "026 For loop downto",
+    "027 For loop break",
+    "028 For loop continue",
+    "029 While loop break",
+    "030 While loop continue",
+    "031 Repeat loop break",
+    "032 Repeat loop continue",
+    "033 Proc var param",
+    "034 Func var param",
+};
+
 TEST_P(ScannerCheckTest, Check) { check(GetParam()); }
 INSTANTIATE_TEST_CASE_P(scannerCheck, ScannerCheckTest, VALUESIN(scannerCheckFiles));
 
@@ -250,3 +289,6 @@ INSTANTIATE_TEST_CASE_P(ParseStatement,ParserStatementCheckTest, VALUESIN(parser
 
 TEST_P(ParserStatementCheckThrowTest, Throw)  { check_throw(GetParam()); }
 INSTANTIATE_TEST_CASE_P(ParseStatement, ParserStatementCheckThrowTest, VALUESIN(parserStatementCheckThrowFiles));
+
+TEST_P(GeneratorCheckTest, Check) { check(GetParam()); }
+INSTANTIATE_TEST_CASE_P(Generate, GeneratorCheckTest, VALUESIN(generatorCheckFiles));

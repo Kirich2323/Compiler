@@ -1,5 +1,13 @@
 #include "Const.h"
 
+exprType castTypes(exprType left, exprType right) {
+    if (left == right)
+        return left;
+    else {
+        return exprType::Real;
+    }
+}
+
 Const Const::ComputeUnaryAddition(Const arg) {
     return arg;
 }
@@ -78,4 +86,104 @@ Const Const::ComputeBinaryLe(Const left, Const right) {
 
 Const Const::ComputeBinaryGe(Const left, Const right) {
     return left >= right;
+}
+
+Const::Const(exprType type, double value) : type(type), value(value) {}
+
+Const Const::operator==(Const right) {
+    return Const(exprType::Integer, value == right.value);
+}
+
+Const Const::operator<(Const right) {
+    return Const(exprType::Integer, value < right.value);
+}
+
+Const Const::operator>(Const right) {
+    if (type != right.type && type != exprType::Integer)
+        throw "Bad type"; //todo
+    return Const(type, (double)((i64)value > (i64)right.value));
+}
+
+Const Const::operator<=(Const right) {
+    if (type != right.type && type != exprType::Integer)
+        throw "Bad type"; //todo
+    return Const(type, (double)((i64)value <= (i64)right.value));
+}
+
+Const Const::operator>=(Const right) {
+    if (type != right.type && type != exprType::Integer)
+        throw "Bad type"; //todo
+    return Const(type, (double)((i64)value >= (i64)right.value));
+}
+
+Const Const::operator!=(Const right) {
+    if (type != right.type && type != exprType::Integer)
+        throw "Bad type"; //todo
+    return Const(type, (double)((i64)value != (i64)right.value));
+}
+
+Const Const::operator!() {
+    if (type != exprType::Integer)
+        throw "Bad type"; //todo
+    return Const(type, (double)(!((i64)value)));
+}
+
+Const Const::operator%(Const right) {
+    if (type != right.type && type != exprType::Integer)
+        throw "Bad type"; //todo
+    return Const(type, (double)((i64)value % (i64)right.value));
+}
+
+Const Const::operator+(Const right) {
+    return Const(castTypes(type, right.type), value + right.value);
+}
+
+Const Const::operator-(Const right) {
+    return Const(castTypes(type, right.type), value - right.value);
+}
+
+Const Const::operator*(Const right) {
+    return Const(castTypes(type, right.type), value * right.value);
+}
+
+Const Const::operator/(Const right) {
+    exprType _type = castTypes(type, right.type);
+    double val = value / right.value;
+    if (_type == exprType::Integer)
+        val = (double)(int)val;
+    return Const(_type, val);
+}
+
+Const Const::operator-() {
+    return Const(type, -value);
+}
+
+Const Const::operator&(Const right) {
+    if (type != right.type && type != exprType::Integer)
+        throw "Bad type"; //todo
+    return Const(type, (double)((i64)value & (i64)right.value));
+}
+
+Const Const::operator^(Const right) {
+    if (type != right.type && type != exprType::Integer)
+        throw "Bad type"; //todo
+    return Const(type, (double)((i64)value ^ (i64)right.value));
+}
+
+Const Const::operator|(Const right) {
+    if (type != right.type && type != exprType::Integer)
+        throw "Bad type"; //todo
+    return Const(type, (double)((i64)value | (i64)right.value));
+}
+
+Const Const::operator >> (Const right) {
+    if (type != right.type && type != exprType::Integer)
+        throw "Bad type"; //todo
+    return Const(type, (double)((i64)value >> (i64)right.value));
+}
+
+Const Const::operator<<(Const right) {
+    if (type != right.type && type != exprType::Integer)
+        throw "Bad type"; //todo
+    return Const(type, (double)((i64)value << (i64)right.value));
 }

@@ -1,0 +1,6 @@
+var
+    a : integer = 1;
+begin
+    for a := 2 to 10 do
+        writeln(a);
+end.

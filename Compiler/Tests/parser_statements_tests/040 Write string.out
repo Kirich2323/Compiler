@@ -1,0 +1,4 @@
+\- main block
+   \- call
+      |- write
+      \- 'some string'

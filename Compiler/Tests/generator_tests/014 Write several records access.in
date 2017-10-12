@@ -1,0 +1,15 @@
+type
+point = record
+    x : integer;
+    y : integer;
+end;
+rec = record
+    a : integer;
+    p : point;
+end;
+var
+    a : rec;
+begin
+    a.p.x := 218;
+    write(a.p.x);
+end.

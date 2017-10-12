@@ -1,9 +1,11 @@
 #include <iostream>
 
+#include <fstream>
 #include "Scanner.h"
 #include "Tests.h"
 #include "error.h"
 #include "Parser.h"
+#include "AsmGen.h"
 
 using namespace std;
 
@@ -16,10 +18,12 @@ int main(int argc, char *argv[]) {
             }
             else if (!strcmp(argv[2], "-p")) {
                 Parser parser(argv[1]);
-                //parser.setSymbolCheck(false);
+                parser.setSymbolCheck(false);
                 //cout << parser.getNodeTreeStr() << endl;
                 //cout << parser.getDeclStr() << endl;
                 cout << parser.getStmtStr() << endl;
+                //ofstream tmp("test.bbb");
+                //cout << parser.getAsmStr();
             }
         }
         else if (argc == 2) {

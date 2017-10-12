@@ -12,7 +12,7 @@ public:
     SymbolType getExprType(SynNodeType type);
     bool checkExprType(SymbolType type, PNode expr);
     bool equalTypes(SymbolType left, SymbolType right);
-    SymbolType tryCast(SymbolType left, SymbolType right);
+    static SymbolType tryCast(SymbolType left, SymbolType right);
     void setTableStack(SymTableStackPtr tableStack);
 
     std::map<SymbolType, std::string> typeNames = {
@@ -25,7 +25,7 @@ public:
     };
 
 private:
-    bool canCast(SymbolType from, SymbolType to);
+    static bool canCast(SymbolType from, SymbolType to);
     SymbolType calcTypeResult(SymbolType type, TokenType tokType);
     SymTableStackPtr _tableStack;
 };

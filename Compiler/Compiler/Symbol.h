@@ -8,6 +8,7 @@
 #include "Token.h"
 #include "error.h"
 #include "Const.h"
+#include "AsmGen.h"
 
 enum class SymbolType {
     TypeAlias,
@@ -21,6 +22,7 @@ enum class SymbolType {
     TypeRef,
     TypeBadType,
     TypeBoolean,
+    TypeString,
     VarConst,
     VarGlobal,
     VarLocal,
@@ -36,7 +38,7 @@ enum class SymbolType {
 
 class Symbol {
 public:
-    Symbol(SymbolType type, std::string name);
+    Symbol(SymbolType type, std::string name, int size = 0);
     virtual SymbolType getType();
     virtual size_t getSize();
     virtual size_t getOffset();
@@ -45,6 +47,10 @@ public:
     virtual bool isType();
     virtual std::string toString(int depth);
     virtual SymbolType getVarType();
+    virtual void generate(AsmCode& asmCode);
+    //virtual void generateValue(AsmCode& asmCode);
+    virtual void generateLValue(AsmCode& asmCode);
+    virtual void generateDecl(AsmCode& asmCode);
 protected:
     size_t _size;
     size_t _offset;
@@ -93,7 +99,7 @@ typedef std::shared_ptr<SymTableStack> SymTableStackPtr;
 
 class SymType : public Symbol {
 public:
-    SymType(SymbolType type, std::string name, int offset = 0);
+    SymType(SymbolType type, std::string name, int size = 0);
     bool isType();
     size_t getSize() override;
     std::string toString(int depth) override;
@@ -118,6 +124,8 @@ public:
     SymbolPtr getSymbol(std::string& name);
     SymTablePtr getTable();
     bool have(std::string& name);
+    size_t getSize() override;
+    //void generate(AsmCode& asmCode) override;
 private:
     SymTablePtr _symTable;
 };
@@ -148,6 +156,9 @@ public:
     int getDimension();
     std::string getName();
     SymbolType getArrType();
+    SymbolPtr getTypeSymbol();
+    size_t getSize() override;
+    int getLeft();
 private:
     int _left, _right;
     SymbolPtr _elemType;
@@ -166,9 +177,13 @@ public:
     SymVar(std::string name, SymbolPtr type, SymbolType varType, Const* init = nullptr);
     std::string toString(int depth) override;
     SymbolType getVarType() override;
+    size_t getSize() override;
     SymbolPtr getVarTypeSymbol();
+    void generate(AsmCode& asmCode) override;
+    void generateLValue(AsmCode& asmCode) override;
+    void generateMemoryCopy(AsmCode& asmCode, AsmCmdPtr cmdMemory, AsmOpType opType);
+    void generateDecl(AsmCode& asmCode) override;
 protected:
-    //~SymVar();
     SymbolPtr _varType;
     Const* _init;
 };
@@ -187,6 +202,7 @@ public:
     int getValue();
     std::string toString(int depth) override;
     SymbolType getVarType() override;
+    void generateDecl(AsmCode& asmCode) override;
 private:
     std::string getConstTypeStr() override;
     int _value;
@@ -198,6 +214,7 @@ public:
     double getValue();
     std::string toString(int depth) override;
     SymbolType getVarType() override;
+    void generateDecl(AsmCode& asmCode) override;
 private:
     std::string getConstTypeStr() override;
     double _value;
@@ -214,6 +231,8 @@ class SymParam : public SymParamBase {
 public:
     SymParam(std::string name, SymbolPtr varType, SymbolPtr method, size_t offset);
     std::string toString(int depth) override;
+    void generate(AsmCode& asmCode) override;
+    void generateLValue(AsmCode& asmCode) override;
 };
 
 class SymVarParam : public SymParamBase {
@@ -221,12 +240,16 @@ public:
     SymVarParam(std::string name, SymbolPtr varType, SymbolPtr method, size_t offset);
     std::string toString(int depth) override;
     size_t getSize() override;
+    void generate(AsmCode& asmCode) override;
+    void generateLValue(AsmCode& asmCode) override;
 };
 
 class SymFuncResult : public SymParamBase {
 public:
     SymFuncResult(std::string name, SymbolPtr varType, SymbolPtr method);
     std::string toString(int depth) override;
+    void generate(AsmCode& asmCode) override;
+    void generateLValue(AsmCode& asmCode) override;
 };
 
 class SymProcBase : public Symbol {
@@ -239,6 +262,7 @@ public:
     SymTablePtr getLocals();
     void setDepth(int depth);
     int getDepth();
+    void generate(AsmCode& asmCode) override;
 protected:
     int _depth;
     SymTablePtr _args, _locals;

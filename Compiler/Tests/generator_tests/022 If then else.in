@@ -1,0 +1,6 @@
+begin
+if (1 > 2) then
+    write('Should not write this')
+else
+    write('Should write this');
+end.

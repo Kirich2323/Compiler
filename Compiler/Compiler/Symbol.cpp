@@ -1,6 +1,6 @@
 #include "Symbol.h"
 
-Symbol::Symbol(SymbolType type, std::string name) : _type(type), _name(name) {}
+Symbol::Symbol(SymbolType type, std::string name, int size) : _type(type), _name(name), _size(size) {}
 
 SymbolType Symbol::getType() {
     return _type;
@@ -36,14 +36,20 @@ SymbolType Symbol::getVarType() {
     return SymbolType::None;
 }
 
-SymType::SymType(SymbolType type, std::string name, int offset) : Symbol(type, name) {}
+void Symbol::generate(AsmCode & asmCode) {}
+
+void Symbol::generateLValue(AsmCode & asmCode) {}
+
+void Symbol::generateDecl(AsmCode & asmCode) {}
+
+SymType::SymType(SymbolType type, std::string name, int size) : Symbol(type, name, size) {}
 
 bool SymType::isType() {
     return true;
 }
 
 size_t SymType::getSize() {
-    return size_t();
+    return _size;
 }
 
 std::string SymType::toString(int depth) {
@@ -72,17 +78,80 @@ SymbolType SymVar::getVarType() {
     SymbolType type = _varType->getType();
     if (type == SymbolType::TypeAlias)
         type = std::dynamic_pointer_cast<SymTypeAlias>(_varType)->getRefSymbol()->getType();
+    //else if (type == SymbolType::TypeArray)
+        //type = std::dynamic_pointer_cast<SymTypeArray>(_varType)->getArrType();
     return type;
+}
+
+void SymVar::generate(AsmCode & asmCode) {
+    if (getSize() == 8) {
+        asmCode.addCmd(MOV, RAX, asmCode.getAdressOperand(asmCode.getVarName(_name)));
+        asmCode.addCmd(PUSH, RAX);
+    }
+    else {
+        generateMemoryCopy(asmCode, AsmCmdPtr(new AsmCmd(MOV, AsmOperandPtr(new AsmReg(RAX)), AsmOperandPtr(new AsmStringImmediate(asmCode.getVarName(_name))))), ADD);
+    }
+}
+
+//void SymVar::generateValue(AsmCode & asmCode) {
+//
+//}
+
+void SymVar::generateLValue(AsmCode & asmCode) {
+    asmCode.addCmd(PUSH, asmCode.getVarName(_name));
+}
+
+size_t SymVar::getSize() {
+    return _varType->getSize();
 }
 
 SymbolPtr SymVar::getVarTypeSymbol() {
     SymbolPtr tmp = _varType;
-    while(tmp->getType() == SymbolType::TypeAlias)
+    while (tmp->getType() == SymbolType::TypeAlias)
         tmp = std::dynamic_pointer_cast<SymTypeAlias>(tmp)->getRefSymbol();
     return tmp;
 }
 
+void SymVar::generateMemoryCopy(AsmCode & asmCode, AsmCmdPtr cmdMemory, AsmOpType opType) {
+    std::string labelBegin = asmCode.genLabelName();
+    std::string labelEnd = asmCode.genLabelName();
+    asmCode.addCmd(cmdMemory);
+    asmCode.addCmd(MOV, RBX, getSize());
+    asmCode.addCmd(XOR, RCX, RCX);
+    asmCode.addLabel(labelBegin);
+    asmCode.addCmd(CMP, RCX, RBX);
+    asmCode.addCmd(JGE, labelEnd);
+    asmCode.addCmd(MOV, RDX, asmCode.getAdressOperand(RAX));
+    asmCode.addCmd(PUSH, RDX);
+    asmCode.addCmd(opType, RAX, 8);
+    asmCode.addCmd(ADD, RCX, 8);
+    asmCode.addCmd(JMP, labelBegin);
+    asmCode.addLabel(labelEnd);
+}
+
+void SymVar::generateDecl(AsmCode & asmCode) {
+    std::string varName = asmCode.getVarName(_name);
+    SymbolType type = _varType->getType();
+    type = type == SymbolType::TypeAlias ? std::dynamic_pointer_cast<SymTypeAlias>(_varType)->getRefType() : type;
+    switch (type) {
+        case SymbolType::TypeInteger:
+            asmCode.addData(varName, _init == nullptr ? 0 : _init->getValue<int>());
+            break;
+        case SymbolType::TypeReal:
+            asmCode.addData(varName, _init == nullptr ? 0.0 : _init->getValue<double>());
+            break;
+        case SymbolType::TypeRecord:
+        case SymbolType::TypeArray:
+            asmCode.addArrayData(varName, getSize());
+            break;
+    }
+}
+
 void SymTable::add(SymbolPtr symb) {
+    if (!symb->isType()) {
+        symb->setOffset(_size);
+        _size += symb->getSize();
+    }
     _symbolNames[symb->getName()] = _symbols.size();
     _symbols.push_back(symb);
 }
@@ -153,7 +222,7 @@ SymbolPtr SymTableStack::getSymbol(TokenPtr token, bool isSymbolCheck) {
         if (isSymbolCheck)
             throw WrongSymbol(token->getLine(), token->getCol(), token->getText());
         else
-            return SymbolPtr(new SymType(SymbolType::TypeInteger, "integer")); //todo fix
+            return SymbolPtr(new SymType(SymbolType::TypeInteger, "integer"));
     }
 }
 
@@ -183,8 +252,19 @@ SymTablePtr SymTypeRecord::getTable() {
 }
 
 bool SymTypeRecord::have(std::string & name) {
-    return _symTable->have(name);    
+    return _symTable->have(name);
 }
+
+size_t SymTypeRecord::getSize() {
+    size_t size = 0;
+    for (auto symb : _symTable->getSymbols())
+        size += symb->getSize();
+    return size;
+}
+
+//void SymTypeRecord::generate(AsmCode & asmCode) {
+//
+//}
 
 SymTypeArray::SymTypeArray(SymbolPtr elemType, SymTypeSubrangePtr subrange) :
     SymType(SymbolType::TypeArray, "array"), _left(subrange->getLeft()), _right(subrange->getRight()), _elemType(elemType) {}
@@ -211,6 +291,18 @@ SymbolType SymTypeArray::getArrType() {
         tmp = std::dynamic_pointer_cast<SymTypeArray>(tmp)->_elemType;
     }
     return tmp->getType();
+}
+
+SymbolPtr SymTypeArray::getTypeSymbol() {
+    return _elemType;
+}
+
+size_t SymTypeArray::getSize() {
+    return (_right - _left + 1) * _elemType->getSize();
+}
+
+int SymTypeArray::getLeft() {
+    return _left;
 }
 
 SymTypeSubrange::SymTypeSubrange(int left, int right) : SymType(SymbolType::TypeSubrange, "subrange"), _left(left), _right(right) {}
@@ -261,6 +353,10 @@ SymbolType SymIntegerConst::getVarType() {
     return SymbolType::TypeInteger;
 }
 
+void SymIntegerConst::generateDecl(AsmCode & asmCode) {
+    asmCode.addData(asmCode.getVarName(_name), _value);
+}
+
 std::string SymIntegerConst::getConstTypeStr() {
     return "const integer ";
 }
@@ -279,6 +375,10 @@ std::string SymRealConst::toString(int depth) {
 
 SymbolType SymRealConst::getVarType() {
     return SymbolType::TypeReal;
+}
+
+void SymRealConst::generateDecl(AsmCode & asmCode) {
+    asmCode.addData(asmCode.getVarName(_name), _value);
 }
 
 std::string SymRealConst::getConstTypeStr() {
@@ -334,6 +434,16 @@ std::string SymParam::toString(int depth) {
     return sstream.str();
 }
 
+void SymParam::generate(AsmCode & asmCode) {
+    asmCode.addCmd(MOV, RAX, asmCode.getAdressOperand(RBP, _offset + 8));
+    asmCode.addCmd(PUSH, RAX);
+}
+
+void SymParam::generateLValue(AsmCode & asmCode) {
+    asmCode.addCmd(LEA, RAX, asmCode.getAdressOperand(RBP, _offset + 8));
+    asmCode.addCmd(PUSH, RAX);
+}
+
 SymVarParam::SymVarParam(std::string name, SymbolPtr varType, SymbolPtr method, size_t offset) :
     SymParamBase(SymbolType::VarParam, name, varType, method, offset) {}
 
@@ -344,7 +454,18 @@ std::string SymVarParam::toString(int depth) {
 }
 
 size_t SymVarParam::getSize() {
-    return size_t();
+    return 8;
+}
+
+void SymVarParam::generate(AsmCode & asmCode) {
+    asmCode.addCmd(MOV, RAX, asmCode.getAdressOperand(RBP, _offset + 8));
+    asmCode.addCmd(MOV, RAX, asmCode.getAdressOperand(RAX));
+    asmCode.addCmd(PUSH, RAX);
+}
+
+void SymVarParam::generateLValue(AsmCode & asmCode) {
+    asmCode.addCmd(MOV, RAX, asmCode.getAdressOperand(RBP, _offset + 8));
+    asmCode.addCmd(PUSH, RAX);
 }
 
 SymFuncResult::SymFuncResult(std::string name, SymbolPtr varType, SymbolPtr method) :
@@ -354,6 +475,16 @@ std::string SymFuncResult::toString(int depth) {
     std::stringstream sstream;
     sstream << Symbol::toString(depth) << std::setw(_secondColumnWidth) << "func result " << std::setw(_thirdColumnWidth) << _varType->getName();
     return sstream.str();
+}
+
+void SymFuncResult::generate(AsmCode & asmCode) {
+    asmCode.addCmd(MOV, RAX, asmCode.getAdressOperand(RBP, std::dynamic_pointer_cast<SymProcBase>(_method)->getArgs()->getSize() + 8));
+    asmCode.addCmd(PUSH, RAX);
+}
+
+void SymFuncResult::generateLValue(AsmCode & asmCode) {
+    asmCode.addCmd(LEA, RAX, asmCode.getAdressOperand(RBP, std::dynamic_pointer_cast<SymProcBase>(_method)->getArgs()->getSize() + 8));
+    asmCode.addCmd(PUSH, RAX);
 }
 
 SymProcBase::SymProcBase(SymbolType type, std::string name) : Symbol(type, name) {}
@@ -391,6 +522,11 @@ void SymProcBase::setDepth(int depth) {
 
 int SymProcBase::getDepth() {
     return _depth;
+}
+
+void SymProcBase::generate(AsmCode & asmCode) {
+    for (auto sym : _locals->getSymbols())
+        sym->generate(asmCode);
 }
 
 SymProc::SymProc(std::string name) : SymProcBase(SymbolType::Proc, name) {}

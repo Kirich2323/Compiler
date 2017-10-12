@@ -1,0 +1,18 @@
+begin
+if (1.5 = 1.5) then
+    writeln('Equal');
+if (1.0 <> 0.0) then
+    writeln('Not equal');
+if (1.5 > 1.2) then
+    writeln('Greater');
+if (1.5 >= 1.5) then
+    writeln('Greater or equal');
+if (1.8 >= 1.5) then
+    writeln('Greater or equal');
+if (0.8 < 1.2) then
+    writeln('Less');
+if (1.2 <= 1.2) then
+    writeln('Less or equal');
+if (1.0 <= 1.2) then
+    write('Less or equal');
+end.
