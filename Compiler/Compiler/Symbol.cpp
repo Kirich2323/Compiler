@@ -11,7 +11,7 @@ size_t Symbol::getSize() {
 }
 
 size_t Symbol::getOffset() {
-    return _offset;;
+    return _offset;
 }
 
 void Symbol::setOffset(size_t offset) {
@@ -78,27 +78,38 @@ SymbolType SymVar::getVarType() {
     SymbolType type = _varType->getType();
     if (type == SymbolType::TypeAlias)
         type = std::dynamic_pointer_cast<SymTypeAlias>(_varType)->getRefSymbol()->getType();
-    //else if (type == SymbolType::TypeArray)
-        //type = std::dynamic_pointer_cast<SymTypeArray>(_varType)->getArrType();
     return type;
 }
 
 void SymVar::generate(AsmCode & asmCode) {
-    if (getSize() == 8) {
-        asmCode.addCmd(MOV, RAX, asmCode.getAdressOperand(asmCode.getVarName(_name)));
-        asmCode.addCmd(PUSH, RAX);
+    if (getType() == SymbolType::VarGlobal) {
+        if (getSize() == 8) {
+            asmCode.addCmd(MOV, RAX, asmCode.getAdressOperand(asmCode.getVarName(_name)));
+            asmCode.addCmd(PUSH, RAX);
+        }
+        else {
+            generateMemoryCopy(asmCode, AsmCmdPtr(new AsmCmd(MOV, AsmOperandPtr(new AsmReg(RAX)), AsmOperandPtr(new AsmStringImmediate(asmCode.getVarName(_name))))), ADD);
+        }
     }
     else {
-        generateMemoryCopy(asmCode, AsmCmdPtr(new AsmCmd(MOV, AsmOperandPtr(new AsmReg(RAX)), AsmOperandPtr(new AsmStringImmediate(asmCode.getVarName(_name))))), ADD);
-    }
+        if (getSize() == 8) {
+            asmCode.addCmd(MOV, RAX, asmCode.getAdressOperand(RBP, -(int)getOffset() - 8));
+            asmCode.addCmd(PUSH, RAX);
+        }
+        else {
+            generateMemoryCopy(asmCode, AsmCmdPtr(new AsmCmd(LEA, AsmOperandPtr(new AsmReg(RAX)), asmCode.getAdressOperand(RBP, -(int)getOffset() - 8))), SUB);
+        }
+    }    
 }
 
-//void SymVar::generateValue(AsmCode & asmCode) {
-//
-//}
-
 void SymVar::generateLValue(AsmCode & asmCode) {
-    asmCode.addCmd(PUSH, asmCode.getVarName(_name));
+    if (getType() == SymbolType::VarGlobal) {
+        asmCode.addCmd(PUSH, asmCode.getVarName(_name));
+    }
+    else {
+        asmCode.addCmd(LEA, RAX, asmCode.getAdressOperand(RBP, -(int)getOffset() - 8));
+        asmCode.addCmd(PUSH, RAX);
+    }
 }
 
 size_t SymVar::getSize() {
@@ -161,7 +172,6 @@ bool SymTable::have(std::string name) {
 }
 
 SymbolPtr SymTable::getSymbol(std::string name) {
-    //if (have(name))
     return _symbols[_symbolNames[name]];
 }
 
@@ -261,10 +271,6 @@ size_t SymTypeRecord::getSize() {
         size += symb->getSize();
     return size;
 }
-
-//void SymTypeRecord::generate(AsmCode & asmCode) {
-//
-//}
 
 SymTypeArray::SymTypeArray(SymbolPtr elemType, SymTypeSubrangePtr subrange) :
     SymType(SymbolType::TypeArray, "array"), _left(subrange->getLeft()), _right(subrange->getRight()), _elemType(elemType) {}

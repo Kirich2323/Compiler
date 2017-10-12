@@ -3,11 +3,19 @@ if (1 = 1) then
     writeln('Equal');
 if (2 > 1) then
     writeln('Greater');
+if (1 > 2) then
+    writeln('Should not type this');
 if (1 >= 1) then
+    writeln('Greater or equal');
+if (2 >= 1) then
     writeln('Greater or equal');
 if (1 < 2) then
     writeln('Less');
+if (2 < 2) then
+    writeln('Should not type this');
 if (1 <= 1) then
+    writeln('Less or equal');
+if (1 <= 2) then
     writeln('Less or equal');
 if (1 <> 2) then
     write('Not equal');

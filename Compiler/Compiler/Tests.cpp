@@ -264,6 +264,13 @@ std::vector<std::string> generatorCheckFiles = {
     "032 Repeat loop continue",
     "033 Proc var param",
     "034 Func var param",
+    "035 Factorial recursive",
+    "036 Factorial loop",
+    "037 Local proc with local vars",
+    "038 Fibonachi recursive",
+    "039 n2 sort",
+    "040 Proc order params",
+    "041 Func order params",
 };
 
 TEST_P(ScannerCheckTest, Check) { check(GetParam()); }

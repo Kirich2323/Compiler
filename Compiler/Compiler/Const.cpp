@@ -99,38 +99,26 @@ Const Const::operator<(Const right) {
 }
 
 Const Const::operator>(Const right) {
-    if (type != right.type && type != exprType::Integer)
-        throw "Bad type"; //todo
     return Const(type, (double)((i64)value > (i64)right.value));
 }
 
 Const Const::operator<=(Const right) {
-    if (type != right.type && type != exprType::Integer)
-        throw "Bad type"; //todo
     return Const(type, (double)((i64)value <= (i64)right.value));
 }
 
 Const Const::operator>=(Const right) {
-    if (type != right.type && type != exprType::Integer)
-        throw "Bad type"; //todo
     return Const(type, (double)((i64)value >= (i64)right.value));
 }
 
 Const Const::operator!=(Const right) {
-    if (type != right.type && type != exprType::Integer)
-        throw "Bad type"; //todo
     return Const(type, (double)((i64)value != (i64)right.value));
 }
 
 Const Const::operator!() {
-    if (type != exprType::Integer)
-        throw "Bad type"; //todo
     return Const(type, (double)(!((i64)value)));
 }
 
 Const Const::operator%(Const right) {
-    if (type != right.type && type != exprType::Integer)
-        throw "Bad type"; //todo
     return Const(type, (double)((i64)value % (i64)right.value));
 }
 
@@ -159,31 +147,21 @@ Const Const::operator-() {
 }
 
 Const Const::operator&(Const right) {
-    if (type != right.type && type != exprType::Integer)
-        throw "Bad type"; //todo
     return Const(type, (double)((i64)value & (i64)right.value));
 }
 
 Const Const::operator^(Const right) {
-    if (type != right.type && type != exprType::Integer)
-        throw "Bad type"; //todo
     return Const(type, (double)((i64)value ^ (i64)right.value));
 }
 
 Const Const::operator|(Const right) {
-    if (type != right.type && type != exprType::Integer)
-        throw "Bad type"; //todo
     return Const(type, (double)((i64)value | (i64)right.value));
 }
 
 Const Const::operator >> (Const right) {
-    if (type != right.type && type != exprType::Integer)
-        throw "Bad type"; //todo
     return Const(type, (double)((i64)value >> (i64)right.value));
 }
 
 Const Const::operator<<(Const right) {
-    if (type != right.type && type != exprType::Integer)
-        throw "Bad type"; //todo
     return Const(type, (double)((i64)value << (i64)right.value));
 }

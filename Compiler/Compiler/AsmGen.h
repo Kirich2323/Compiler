@@ -299,4 +299,5 @@ private:
     std::vector<std::string> _continueLabels;
     int _labelCount;
     int _namesCount;
+    int _depth;
 };

@@ -62,7 +62,6 @@ void BinOpNode::generate(AsmCode & asmCode) {
         case SymbolType::TypeInteger:  generateInt(asmCode); break;
         case SymbolType::TypeReal:     generateReal(leftType, rightType, asmCode);  break;
         case SymbolType::TypeBoolean:  break;
-            //default:
     }
 }
 
@@ -172,7 +171,7 @@ void BinOpNode::generateIntRelation(AsmCode & asmCode) {
             asmCode.addCmd(JG, label1);
             break;
     }
-    asmCode.addCmd(MOV, RAX, 0);
+    asmCode.addCmd(XOR, RAX, RAX);
     asmCode.addCmd(JMP, label2);
     asmCode.addLabel(label1);
     asmCode.addCmd(MOV, RAX, 1);
@@ -298,7 +297,7 @@ int IdentifierNode::getSize() {
         case SymbolType::Func:
             return std::dynamic_pointer_cast<SymVar>(std::dynamic_pointer_cast<SymProcBase>(_symbol)->getArgs()->getSymbol("result"))->getSize();
         default:
-            return _symbol->getSize(); //todo figure out do i need to cast
+            return _symbol->getSize();
     }
 }
 
@@ -584,10 +583,7 @@ void ForNode::generate(AsmCode & asmCode) {
     _symbol->generateLValue(asmCode);
     asmCode.addCmd(POP, RBX);
     asmCode.addCmd(MOV, RAX, asmCode.getAdressOperand(RBX));
-    if (_isTo)
-        asmCode.addCmd(ADD, RAX, 1);
-    else
-        asmCode.addCmd(SUB, RAX, 1);
+    asmCode.addCmd(_isTo ? ADD : SUB, RAX, 1);
     asmCode.addCmd(MOV, asmCode.getAdressOperand(RBX), RAX);
     asmCode.addLabel(cond);
     _final->generate(asmCode);
@@ -596,10 +592,7 @@ void ForNode::generate(AsmCode & asmCode) {
     asmCode.addCmd(POP, RAX);
     asmCode.addCmd(MOV, RBX, asmCode.getAdressOperand(RBX));
     asmCode.addCmd(CMP, RBX, RAX);
-    if (_isTo)
-        asmCode.addCmd(JLE, body);
-    else
-        asmCode.addCmd(JGE, body);
+        asmCode.addCmd(_isTo ? JLE : JGE, body);
     asmCode.addLabel(end);
     asmCode.popLoopLabels();
 }
@@ -714,8 +707,6 @@ SymbolPtr CallNode::getSymbol() {
 }
 
 SymbolType CallNode::getType() {
-    if (_symbol->getType() != SymbolType::Func)
-        throw "Error"; //todo verify;
     return std::dynamic_pointer_cast<SymProcBase>(_symbol)->getArgs()->getSymbol("result")->getVarType();
 }
 

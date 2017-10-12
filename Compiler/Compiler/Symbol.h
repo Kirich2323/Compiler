@@ -48,7 +48,6 @@ public:
     virtual std::string toString(int depth);
     virtual SymbolType getVarType();
     virtual void generate(AsmCode& asmCode);
-    //virtual void generateValue(AsmCode& asmCode);
     virtual void generateLValue(AsmCode& asmCode);
     virtual void generateDecl(AsmCode& asmCode);
 protected:
@@ -125,7 +124,6 @@ public:
     SymTablePtr getTable();
     bool have(std::string& name);
     size_t getSize() override;
-    //void generate(AsmCode& asmCode) override;
 private:
     SymTablePtr _symTable;
 };

@@ -1,6 +1,6 @@
 #include "AsmGen.h"
 
-AsmCode::AsmCode() : _labelCount(0), _namesCount(0) {
+AsmCode::AsmCode() : _labelCount(0), _namesCount(0), _depth(0) {
     addData("formatInt", "\"%ld\"");
     addData("formatFloat", "\"%f\"");
     addData("formatNewLine", "10");
@@ -82,7 +82,7 @@ void AsmCode::addWriteInt() {
 void AsmCode::addWriteFloat() {
     addCmd(POP, RAX);
     addCmd(MOV, RDX, RAX);
-    addCmd(MOV, RAX, 0);
+    addCmd(XOR, RAX, RAX);
     addWrite("formatFloat");
 }
 

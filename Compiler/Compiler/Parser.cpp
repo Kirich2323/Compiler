@@ -184,11 +184,9 @@ PNode Parser::parseIdentifier(bool isRecursive) {
             }
             case TokenType::OpeningSquareBracket:
             {
-                //_scanner.next();
-                //std::vector<PNode> args = getArgsArray(TokenType::ClosingParenthesis);
                 std::vector<PNode> args = parseCommaSeparated();
                 if (_isSymbolCheck)
-                    if (sym->getVarType() != SymbolType::TypeArray ||
+                    if (sym->getVarType() != SymbolType::TypeArray &&  sym->getVarType() != SymbolType::TypeOpenArray ||
                         args.size() != std::dynamic_pointer_cast<SymTypeArray>(std::dynamic_pointer_cast<SymVar>(sym)->getVarTypeSymbol())->getDimension())
                         throw IllegalQualifier(t->getLine(), t->getCol());
                 result = PNode(new ArrayIndexNode(result, args, sym));
@@ -315,7 +313,6 @@ PNode Parser::parseForStatement() {
 }
 
 PNode Parser::parseRepeatStatement() {
-    //_scanner.next();
     BlockNode* body = new BlockNode("repeat block");
     parseStatementSequence(body);
     if (getToken()->getType() == TokenType::Semicolon)
@@ -449,7 +446,7 @@ void Parser::parseDeclaration(int depth, bool isGlobal) {
         switch (token->getType()) {
             case TokenType::Var:
                 _scanner.next();
-                parseVarDeclaration(true);
+                parseVarDeclaration(isGlobal);
                 break;
             case TokenType::Const:
                 _scanner.next();
@@ -622,12 +619,11 @@ void Parser::generateProc(SymbolPtr symbol, int depth) {
     _code.addCmd(POP, RBP);
     _code.addCmd(RET);
     for (auto sym : proc->getLocals()->getSymbols()) {
-        if (sym->getName() == "write" && sym->getName() == "writeln") {
-            throw "Error"; //todo, maybe replace
-        }
-        if (sym->getType() == SymbolType::Proc || sym->getType() == SymbolType::Func) {
+        //if (sym->getName() == "write" && sym->getName() == "writeln") {
+        //    throw "Error"; //todo, maybe replace
+        //}
+        if (sym->getType() == SymbolType::Proc || sym->getType() == SymbolType::Func)
             generateProc(sym, depth + 1);
-        }
     }
 }
 
