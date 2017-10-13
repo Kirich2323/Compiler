@@ -1,0 +1,22 @@
+function fact() : integer;
+var
+    a : integer;
+    procedure f();
+    var
+        a : integer;
+    begin
+        a := 20;
+    end;
+begin
+    a := 10;
+    f();
+    result := a;
+end;
+
+var
+    a : integer;
+begin
+    a := 2;
+    writeln(fact());
+    writeln(a);
+end.

@@ -1,0 +1,16 @@
+type
+    rec = record
+        x : integer;
+        y : integer;
+    end;
+
+function f(a, b : integer) : rec;
+begin
+    result.x := a;
+    result.y := b;
+end;
+
+begin
+    writeln(f(10, 22).x);
+    writeln(f(10, 22).y);
+end.

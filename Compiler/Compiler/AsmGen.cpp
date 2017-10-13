@@ -8,6 +8,7 @@ AsmCode::AsmCode() : _labelCount(0), _namesCount(0), _depth(0) {
 
 void AsmCode::addCmd(AsmCmdPtr cmd) {
     _commands.push_back(cmd);
+    //std::cout << cmd->toString() << std::endl; //todo delete
 }
 
 void AsmCode::addCmd(AsmOpType opType, AsmRegType reg) {
@@ -35,11 +36,13 @@ std::string AsmCode::toString() {
     sstream << "global  main" << std::endl;
     sstream << "extern  printf" << std::endl;
     sstream << "section .text" << std::endl;
+    //sstream << "\tmov rbp, rsp" << std::endl;
     for (auto command : _commands) {
         sstream << command->toString() << std::endl;
     }
-    sstream << "xor rax, rax" << std::endl;
-    sstream << "ret" << std::endl;
+    sstream << "\tmov rsp, rbp" << std::endl;
+    sstream << "\txor rax, rax" << std::endl;
+    sstream << "\tret" << std::endl;
 
     sstream << "section .data" << std::endl;
     for (auto asmData : _data) {

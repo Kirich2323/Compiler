@@ -1,0 +1,13 @@
+function f(a : integer; b : integer; c, d, e : integer) : integer;
+begin
+    writeln(a);
+    writeln(b);
+    writeln(c);
+    writeln(d);
+    writeln(e);
+    result := a + b + c + d + e;
+end;
+
+begin
+    writeln(f(1, 2, 3, 4, 5));
+end.

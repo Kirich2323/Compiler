@@ -1,0 +1,44 @@
+var
+    a : array [1..10] of integer;
+
+procedure f();
+var
+    i, j : integer;
+    tmp : integer;
+begin
+    for i := 1 to 10 do begin
+        for j := i to 10 do begin
+            if (a[i] < a[j]) then
+            begin
+                tmp := a[i];
+                a[i] := a[j];
+                a[j] := tmp;
+            end;
+        end;
+    end;
+end;
+
+var
+    i : integer;
+begin
+    a[1] := 2;
+    a[2] := 1;
+    a[3] := 9;
+    a[4] := 12;
+    a[5] := -1;
+    a[6] := 0;
+    a[7] := 11;
+    a[8] := 5;
+    a[9] := 100000000;
+    a[10] := -111342;
+    for i := 1 to 10 do
+    begin
+        writeln(a[i]);
+    end;
+    f();
+    writeln();
+    for i := 1 to 10 do
+    begin
+        writeln(a[i]);
+    end;
+end.

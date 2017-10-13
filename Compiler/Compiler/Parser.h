@@ -33,7 +33,7 @@ private:
 
     PNode parseExpr(int);
     PNode parseFactor();
-    PNode parseIdentifier(bool = true);
+    PNode parseIdentifier();
 
     PNode parseStatement();
     PNode parseCompoundStatement(std::string name);   
@@ -43,6 +43,7 @@ private:
     PNode parseForStatement();
     PNode parseRepeatStatement();
     PNode parseIdentifierStatement();
+    PNode parseOnlyIdentifier();
     PNode parseWrite();
     PNode parseWriteln();
     PNode parseBreak();

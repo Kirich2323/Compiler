@@ -90,7 +90,9 @@ std::string Parser::getAsmStr() {
             generateProc(symbol, 0);
     }
     _code.addLabel(std::string("main"));
+    _code.addCmd(MOV, RBP, RSP);
     _root->generate(_code);
+    //_code.addCmd(MOV, RBP, RSP);
     std::ofstream tmp("tmp.asm");
     tmp << _code.toString();
     tmp.close();
@@ -153,12 +155,20 @@ PNode Parser::parseFactor() {
     }
 }
 
-PNode Parser::parseIdentifier(bool isRecursive) {
+PNode Parser::parseOnlyIdentifier() {
+    TokenPtr t = _scanner.getToken();
+    TokenPtr indentToken = t;
+    SymbolPtr sym = _symTables->getSymbol(t, _isSymbolCheck);
+    return PNode(new IdentifierNode(t->getValue(), sym));
+}
+
+PNode Parser::parseIdentifier() {
     TokenPtr t = _scanner.getToken();
     TokenPtr indentToken = t;
     SymbolPtr sym = _symTables->getSymbol(t, _isSymbolCheck);
     PNode result(new IdentifierNode(t->getValue(), sym));
-    while (isRecursive) {
+    bool isDone = false;
+    while (!isDone) {
         t = _scanner.getNextToken();
         switch (t->getType()) {
             case TokenType::Dot:
@@ -168,10 +178,10 @@ PNode Parser::parseIdentifier(bool isRecursive) {
                 if (_isSymbolCheck) {
                     if (sym->getVarType() != SymbolType::TypeRecord)
                         throw IllegalQualifier(t->getLine(), t->getCol());
-                    _symTables->addTable(std::dynamic_pointer_cast<SymTypeRecord>(std::dynamic_pointer_cast<SymVar>(sym)->getVarTypeSymbol())->getTable());
-                    PNode right = parseIdentifier(false);
+                    _symTables->addTable(std::dynamic_pointer_cast<SymTypeRecord>(sym->getVarTypeSymbol())->getTable());
+                    PNode right = parseOnlyIdentifier();
                     _symTables->pop();
-                    SymbolPtr attr = std::dynamic_pointer_cast<SymVar>(sym)->getVarTypeSymbol();
+                    SymbolPtr attr = sym->getVarTypeSymbol();
                     SymTypeRecordPtr rec = std::dynamic_pointer_cast<SymTypeRecord>(attr);
                     if (!rec->have(t->getText()))
                         throw NoMember(t->getLine(), t->getCol(), t->getText());
@@ -179,17 +189,25 @@ PNode Parser::parseIdentifier(bool isRecursive) {
                     sym = rec->getSymbol(t->getText());
                 }
                 else
-                    result = PNode(new RecordAccessNode(result, parseIdentifier(false)));
+                    result = PNode(new RecordAccessNode(result, parseOnlyIdentifier()));
                 break;
             }
             case TokenType::OpeningSquareBracket:
             {
                 std::vector<PNode> args = parseCommaSeparated();
-                if (_isSymbolCheck)
+                SymbolPtr attr = nullptr;
+                if (_isSymbolCheck) {
                     if (sym->getVarType() != SymbolType::TypeArray &&  sym->getVarType() != SymbolType::TypeOpenArray ||
                         args.size() != std::dynamic_pointer_cast<SymTypeArray>(std::dynamic_pointer_cast<SymVar>(sym)->getVarTypeSymbol())->getDimension())
                         throw IllegalQualifier(t->getLine(), t->getCol());
+                    SymbolType type = sym->getVarTypeSymbol()->getVarType();
+                    if (type == SymbolType::TypeRecord || type == SymbolType::TypeArray)
+                        attr = sym->getVarTypeSymbol();
+                    else
+                        attr = sym;
+                }
                 result = PNode(new ArrayIndexNode(result, args, sym));
+                sym = attr;
                 _scanner.expect(TokenType::ClosingSquareBracket);
                 break;
             }
@@ -197,7 +215,7 @@ PNode Parser::parseIdentifier(bool isRecursive) {
             {
                 auto tmp = sym->getType();
                 if (sym->getType() != SymbolType::Func && sym->getType() != SymbolType::Proc) {
-                    isRecursive = false;
+                    isDone = true;
                     break;
                 }
                 _scanner.next();
@@ -211,7 +229,7 @@ PNode Parser::parseIdentifier(bool isRecursive) {
                 break;
             }
             default:
-                isRecursive = false;
+                isDone = true;
         }
     }
     return result;
@@ -336,9 +354,9 @@ PNode Parser::parseIdentifierStatement() {
         expectType(_typeChecker.getExprType(expr), right, tmp);
         return PNode(new AssignmentNode(tok, expr, right));
     }
-    else if (expr->getNodeType() != SynNodeType::Call) {
-        throw InvalidExpression(tok->getLine(), tok->getCol());
-    }
+    /*else if (expr->getNodeType() != SynNodeType::Call) {
+        throw InvalidExpression(tok->getLine(), tok->getCol());*/
+        //}
     return expr;
 }
 

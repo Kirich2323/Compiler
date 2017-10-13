@@ -271,6 +271,9 @@ std::vector<std::string> generatorCheckFiles = {
     "039 n2 sort",
     "040 Proc order params",
     "041 Func order params",
+    "042 Assign array records attr",
+    "043 Assign record with array element",
+    "044 Write func result record attr",
 };
 
 TEST_P(ScannerCheckTest, Check) { check(GetParam()); }

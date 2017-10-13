@@ -291,9 +291,6 @@ SymbolPtr IdentifierNode::getSymbol() {
 
 int IdentifierNode::getSize() {
     switch (_symbol->getType()) {
-        case SymbolType::Proc:
-        case SymbolType::TypeRecord:
-            return _symbol->getSize();
         case SymbolType::Func:
             return std::dynamic_pointer_cast<SymVar>(std::dynamic_pointer_cast<SymProcBase>(_symbol)->getArgs()->getSymbol("result"))->getSize();
         default:
@@ -310,7 +307,7 @@ void IdentifierNode::generateLValue(AsmCode & asmCode) {
 }
 
 bool IdentifierNode::isLocal() {
-    return _symbol->getType() == SymbolType::VarLocal || _symbol->getType() == SymbolType::VarParam;
+    return !(_symbol->getType() == SymbolType::VarGlobal || _symbol->getType() == SymbolType::VarParam);
 }
 
 RealConstNode::RealConstNode(double value) : SynNode(SynNodeType::RealNumber), _value(value) {}
@@ -357,6 +354,10 @@ PNode RecordAccessNode::getRight() {
     return _right;
 }
 
+int RecordAccessNode::getSize() {
+    return _right->getSize();
+}
+
 SymbolType RecordAccessNode::getType() {
     return _right->getType();
 }
@@ -365,14 +366,14 @@ void RecordAccessNode::generate(AsmCode & asmCode) {
     generateLValue(asmCode);
     asmCode.addCmd(POP, RAX);
     asmCode.addCmd(MOV, RAX, asmCode.getAdressOperand(RAX));
-    asmCode.addCmd(PUSH, RAX);
+    asmCode.addCmd(PUSH, RAX);  
 }
 
 void RecordAccessNode::generateLValue(AsmCode & asmCode) {
     _left->generateLValue(asmCode);
     asmCode.addCmd(POP, RAX);
     AsmOpType op = _left->isLocal() ? SUB : ADD;
-    asmCode.addCmd(op, RAX, std::dynamic_pointer_cast<IdentifierNode>(_right)->getSize());
+    asmCode.addCmd(op, RAX, std::dynamic_pointer_cast<IdentifierNode>(_right)->getSymbol()->getOffset());
     asmCode.addCmd(PUSH, RAX);
 }
 
@@ -410,9 +411,28 @@ SymbolType ArrayIndexNode::getType() {
 
 void ArrayIndexNode::generate(AsmCode & asmCode) {
     generateLValue(asmCode);
-    asmCode.addCmd(POP, RAX);
-    asmCode.addCmd(MOV, RAX, asmCode.getAdressOperand(RAX));
-    asmCode.addCmd(PUSH, RAX);
+    SymbolPtr arrSym = _symbol->getVarTypeSymbol()->getVarTypeSymbol();
+    if (arrSym->getSize() <= 8) {
+        asmCode.addCmd(POP, RAX);
+        asmCode.addCmd(MOV, RAX, asmCode.getAdressOperand(RAX));
+        asmCode.addCmd(PUSH, RAX);
+    }
+    else {
+        std::string label1 = asmCode.genLabelName();
+        std::string label2 = asmCode.genLabelName();
+        asmCode.addCmd(POP, RAX);
+        asmCode.addCmd(MOV, RBX, arrSym->getSize());
+        asmCode.addLabel(label1);
+        asmCode.addCmd(CMP, RBX, 0);
+        asmCode.addCmd(JLE, label2);        
+        asmCode.addCmd(MOV, RDX, asmCode.getAdressOperand(RAX));
+        asmCode.addCmd(PUSH, RDX);
+        asmCode.addCmd(ADD, RAX, 8);
+        asmCode.addCmd(SUB, RBX, 8);
+        asmCode.addCmd(JMP, label1);
+        asmCode.addLabel(label2);
+        //asmCode.addCmd(PUSH, RSP);
+    }    
 }
 
 void ArrayIndexNode::generateLValue(AsmCode & asmCode) {
@@ -429,20 +449,21 @@ void ArrayIndexNode::generateIdx(AsmCode & asmCode) {
     int left = 0;
     AsmOpType asmOp;
     asmOp = std::dynamic_pointer_cast<IdentifierNode>(_arr)->isLocal() ? SUB : ADD;
-    for (auto arg : _args)
+    for (auto arg : _args) {
         if (type->getType() == SymbolType::TypeArray) {
             left = std::dynamic_pointer_cast<SymTypeArray>(type)->getLeft();
             type = std::dynamic_pointer_cast<SymTypeArray>(type)->getTypeSymbol();
-            arg->generate(asmCode);
-            asmCode.addCmd(POP, RAX);
-            asmCode.addCmd(MOV, RBX, left);
-            asmCode.addCmd(SUB, RAX, RBX);
-            asmCode.addCmd(MOV, RBX, type->getSize());
-            asmCode.addCmd(IMUL, RBX);
-            asmCode.addCmd(POP, RBX);
-            asmCode.addCmd(asmOp, RBX, RAX);
-            asmCode.addCmd(PUSH, RBX);
         }
+        arg->generate(asmCode);
+        asmCode.addCmd(POP, RAX);
+        asmCode.addCmd(MOV, RBX, left);
+        asmCode.addCmd(SUB, RAX, RBX);
+        asmCode.addCmd(MOV, RBX, type->getSize());
+        asmCode.addCmd(IMUL, RBX);
+        asmCode.addCmd(POP, RBX);
+        asmCode.addCmd(asmOp, RBX, RAX);
+        asmCode.addCmd(PUSH, RBX);
+    }
 }
 
 UnaryNode::UnaryNode(TokenPtr t, PNode node) : OpNode(t, SynNodeType::UnaryOp),
@@ -588,11 +609,11 @@ void ForNode::generate(AsmCode & asmCode) {
     asmCode.addLabel(cond);
     _final->generate(asmCode);
     _symbol->generateLValue(asmCode);
-    asmCode.addCmd(POP, RBX);    
+    asmCode.addCmd(POP, RBX);
     asmCode.addCmd(POP, RAX);
     asmCode.addCmd(MOV, RBX, asmCode.getAdressOperand(RBX));
     asmCode.addCmd(CMP, RBX, RAX);
-        asmCode.addCmd(_isTo ? JLE : JGE, body);
+    asmCode.addCmd(_isTo ? JLE : JGE, body);
     asmCode.addLabel(end);
     asmCode.popLoopLabels();
 }
@@ -678,15 +699,15 @@ void AssignmentNode::generate(AsmCode & asmCode) {
     _right->generate(asmCode);
     _left->generateLValue(asmCode);
     asmCode.addCmd(POP, RAX);
-    if (_right->getSize() <= 8) {
+    if (_left->getSize() <= 8) {
         asmCode.addCmd(POP, RBX);
         asmCode.addCmd(MOV, asmCode.getAdressOperand(RAX), RBX);
     }
     else {
         std::string labelBegin = asmCode.genLabelName();
         std::string labelEnd = asmCode.genLabelName();
-        asmCode.addCmd(MOV, RBX, _right->getSize());
-        asmCode.addCmd(LEA, RAX, asmCode.getAdressOperand(RAX, _right->getSize() - 8));
+        asmCode.addCmd(MOV, RBX, _left->getSize());
+        asmCode.addCmd(LEA, RAX, asmCode.getAdressOperand(RAX, _left->getSize() - 8));
         asmCode.addLabel(labelBegin);
         asmCode.addCmd(CMP, RBX, 0);
         asmCode.addCmd(JLE, labelEnd);
@@ -724,6 +745,10 @@ std::string CallNode::toString(std::string indent, bool last) {
     return str;
 }
 
+int CallNode::getSize() {
+    return std::dynamic_pointer_cast<SymProcBase>(_symbol)->getArgs()->getSymbol("result")->getSize();
+}
+
 void CallNode::generate(AsmCode & asmCode) {
     int size = 0;
     SymTablePtr table = std::dynamic_pointer_cast<SymProcBase>(_symbol)->getArgs();
@@ -739,6 +764,13 @@ void CallNode::generate(AsmCode & asmCode) {
     }
     asmCode.addCmd(CALL, _symbol->getName() + std::to_string(std::dynamic_pointer_cast<SymProcBase>(_symbol)->getDepth()));
     asmCode.addCmd(ADD, RSP, table->getSize() - size);
+}
+
+void CallNode::generateLValue(AsmCode & asmCode) {
+    generate(asmCode);
+    asmCode.addCmd(MOV, RAX, RSP);
+    asmCode.addCmd(ADD, RAX, std::dynamic_pointer_cast<SymProcBase>(_symbol)->getArgs()->getSymbol("result")->getSize() - 8);
+    asmCode.addCmd(PUSH, RAX);
 }
 
 WriteNode::WriteNode(PNode expr, std::vector<PNode> args) : CallNode(expr, args) {}
@@ -768,9 +800,9 @@ std::string WriteNode::toString(std::string indent, bool last) {
 StringConstNode::StringConstNode(std::string value) : SynNode(SynNodeType::String), _value(value) {}
 
 std::string StringConstNode::toString(std::string indent, bool last) {
-    std::string str = indent;    
+    std::string str = indent;
     updateIndentAndStr(str, indent, last);
-    str += "'" + _value + "'";    
+    str += "'" + _value + "'";
     return str;
 }
 
@@ -801,7 +833,7 @@ void BreakNode::generate(AsmCode & asmCode) {
         asmCode.addCmd(JMP, label);
 }
 
-std::string BreakNode::toString(std::string indent, bool last) {    
+std::string BreakNode::toString(std::string indent, bool last) {
     return indent + "break";
 }
 

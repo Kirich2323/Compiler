@@ -1,0 +1,16 @@
+type
+    rec = record
+        x : integer;
+        y : integer;
+    end;
+
+var
+    p : rec;
+    r : rec;
+    a : array [1..10] of rec;
+begin
+    a[1].x := 10;
+    a[1].y := 22;
+    writeln(a[1].x);
+    writeln(a[1].y);
+end.

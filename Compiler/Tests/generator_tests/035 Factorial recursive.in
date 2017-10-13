@@ -1,0 +1,21 @@
+function fact(n : integer) : integer;
+begin
+    if (n = 1) then
+    begin
+        result := 1;
+    end
+    else
+    begin
+        result := n * fact(n - 1);
+    end;
+end;
+
+var
+    a : integer = 1;
+begin
+    writeln(fact(1));
+    writeln(fact(2));
+    writeln(fact(5));
+    writeln(fact(10));
+    write(fact(12));
+end.

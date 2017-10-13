@@ -36,6 +36,9 @@ enum class SymbolType {
     None,
 };
 
+
+class Symbol;
+typedef std::shared_ptr<Symbol> SymbolPtr;
 class Symbol {
 public:
     Symbol(SymbolType type, std::string name, int size = 0);
@@ -50,6 +53,7 @@ public:
     virtual void generate(AsmCode& asmCode);
     virtual void generateLValue(AsmCode& asmCode);
     virtual void generateDecl(AsmCode& asmCode);
+    virtual SymbolPtr getVarTypeSymbol() { return nullptr; }
 protected:
     size_t _size;
     size_t _offset;
@@ -61,15 +65,13 @@ protected:
     static const int _thirdColumnWidth = 15;
 };
 
-typedef std::shared_ptr<Symbol> SymbolPtr;
-
 class SymTable {
 public:
     void add(SymbolPtr symb);
     bool have(std::string name);
     SymbolPtr getSymbol(std::string name);
-    std::vector<SymbolPtr> getSymbols();
-    std::unordered_map<std::string, int> getSymbolNames();
+    std::vector<SymbolPtr>& getSymbols();
+    std::unordered_map<std::string, int>& getSymbolNames();
     void checkUnique(TokenPtr token);
     size_t getSize();
     std::string toString(int depth);
@@ -111,6 +113,8 @@ public:
     SymbolPtr getRefSymbol();
     SymbolType getRefType();
     size_t getSize() override;
+    SymbolType getVarType() override;
+    SymbolPtr getVarTypeSymbol() override;
 private:
     SymbolPtr _refType;
 
@@ -157,6 +161,8 @@ public:
     SymbolPtr getTypeSymbol();
     size_t getSize() override;
     int getLeft();
+    SymbolType getVarType() override;
+    SymbolPtr getVarTypeSymbol();
 private:
     int _left, _right;
     SymbolPtr _elemType;
@@ -176,7 +182,7 @@ public:
     std::string toString(int depth) override;
     SymbolType getVarType() override;
     size_t getSize() override;
-    SymbolPtr getVarTypeSymbol();
+    SymbolPtr getVarTypeSymbol() override;
     void generate(AsmCode& asmCode) override;
     void generateLValue(AsmCode& asmCode) override;
     void generateMemoryCopy(AsmCode& asmCode, AsmCmdPtr cmdMemory, AsmOpType opType);
@@ -246,6 +252,7 @@ class SymFuncResult : public SymParamBase {
 public:
     SymFuncResult(std::string name, SymbolPtr varType, SymbolPtr method);
     std::string toString(int depth) override;
+    //SymbolType getVarType() override;
     void generate(AsmCode& asmCode) override;
     void generateLValue(AsmCode& asmCode) override;
 };
@@ -271,6 +278,8 @@ class SymFunc : public SymProcBase {
 public:
     SymFunc(std::string name);
     std::string toString(int depth) override;
+    SymbolType getVarType() override;
+    SymbolPtr getVarTypeSymbol() override;
 };
 
 class SymProc : public SymProcBase {

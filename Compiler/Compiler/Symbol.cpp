@@ -82,30 +82,25 @@ SymbolType SymVar::getVarType() {
 }
 
 void SymVar::generate(AsmCode & asmCode) {
-    if (getType() == SymbolType::VarGlobal) {
+    if (getType() == SymbolType::VarGlobal)
         if (getSize() == 8) {
             asmCode.addCmd(MOV, RAX, asmCode.getAdressOperand(asmCode.getVarName(_name)));
             asmCode.addCmd(PUSH, RAX);
         }
-        else {
+        else
             generateMemoryCopy(asmCode, AsmCmdPtr(new AsmCmd(MOV, AsmOperandPtr(new AsmReg(RAX)), AsmOperandPtr(new AsmStringImmediate(asmCode.getVarName(_name))))), ADD);
-        }
-    }
-    else {
+    else 
         if (getSize() == 8) {
             asmCode.addCmd(MOV, RAX, asmCode.getAdressOperand(RBP, -(int)getOffset() - 8));
             asmCode.addCmd(PUSH, RAX);
         }
-        else {
-            generateMemoryCopy(asmCode, AsmCmdPtr(new AsmCmd(LEA, AsmOperandPtr(new AsmReg(RAX)), asmCode.getAdressOperand(RBP, -(int)getOffset() - 8))), SUB);
-        }
-    }    
+        else 
+            generateMemoryCopy(asmCode, AsmCmdPtr(new AsmCmd(LEA, AsmOperandPtr(new AsmReg(RAX)), asmCode.getAdressOperand(RBP, -(int)getOffset() - 8))), SUB);   
 }
 
 void SymVar::generateLValue(AsmCode & asmCode) {
-    if (getType() == SymbolType::VarGlobal) {
+    if (getType() == SymbolType::VarGlobal)
         asmCode.addCmd(PUSH, asmCode.getVarName(_name));
-    }
     else {
         asmCode.addCmd(LEA, RAX, asmCode.getAdressOperand(RBP, -(int)getOffset() - 8));
         asmCode.addCmd(PUSH, RAX);
@@ -175,11 +170,11 @@ SymbolPtr SymTable::getSymbol(std::string name) {
     return _symbols[_symbolNames[name]];
 }
 
-std::vector<SymbolPtr> SymTable::getSymbols() {
+std::vector<SymbolPtr>& SymTable::getSymbols() {
     return _symbols;
 }
 
-std::unordered_map<std::string, int> SymTable::getSymbolNames() {
+std::unordered_map<std::string, int>& SymTable::getSymbolNames() {
     return _symbolNames;
 }
 
@@ -225,15 +220,13 @@ bool SymTableStack::haveSymbol(std::string name) {
 SymbolPtr SymTableStack::getSymbol(TokenPtr token, bool isSymbolCheck) {
     std::string name = token->getText();
     SymTablePtr table = findTableBySymbol(name);
-    if (table != nullptr) {
+    if (table != nullptr)
         return findTableBySymbol(name)->getSymbol(name);
-    }
-    else {
+    else
         if (isSymbolCheck)
             throw WrongSymbol(token->getLine(), token->getCol(), token->getText());
         else
             return SymbolPtr(new SymType(SymbolType::TypeInteger, "integer"));
-    }
 }
 
 SymTablePtr SymTableStack::findTableBySymbol(const std::string& symbol) {
@@ -292,9 +285,13 @@ std::string SymTypeArray::getName() {
 }
 
 SymbolType SymTypeArray::getArrType() {
-    SymbolPtr tmp = _elemType;
+    SymbolPtr tmp = _elemType;    
+    if (tmp->getType() == SymbolType::TypeAlias)
+        tmp = std::dynamic_pointer_cast<SymTypeAlias>(tmp)->getRefSymbol();
     while (tmp->getType() == SymbolType::TypeArray) {
         tmp = std::dynamic_pointer_cast<SymTypeArray>(tmp)->_elemType;
+        if (tmp->getType() == SymbolType::TypeAlias)
+            tmp = std::dynamic_pointer_cast<SymTypeAlias>(tmp)->getRefSymbol();
     }
     return tmp->getType();
 }
@@ -309,6 +306,17 @@ size_t SymTypeArray::getSize() {
 
 int SymTypeArray::getLeft() {
     return _left;
+}
+
+SymbolType SymTypeArray::getVarType() {
+    return _elemType->getVarType();
+}
+
+SymbolPtr SymTypeArray::getVarTypeSymbol() {
+    SymbolPtr tmp = _elemType;
+    while (tmp->getType() == SymbolType::TypeAlias)
+        tmp = std::dynamic_pointer_cast<SymTypeAlias>(tmp)->getRefSymbol();
+    return tmp;
 }
 
 SymTypeSubrange::SymTypeSubrange(int left, int right) : SymType(SymbolType::TypeSubrange, "subrange"), _left(left), _right(right) {}
@@ -419,6 +427,14 @@ size_t SymTypeAlias::getSize() {
     return _refType->getSize();
 }
 
+SymbolType SymTypeAlias::getVarType() {
+    return _refType->getType();
+}
+
+SymbolPtr SymTypeAlias::getVarTypeSymbol() {
+    return _refType;
+}
+
 SymFunc::SymFunc(std::string name) : SymProcBase(SymbolType::Func, name) {}
 
 std::string SymFunc::toString(int depth) {
@@ -426,6 +442,14 @@ std::string SymFunc::toString(int depth) {
     sstream << Symbol::toString(depth) << std::setw(_secondColumnWidth) << "func " << std::endl;
     sstream << SymProcBase::toString(depth);
     return sstream.str();
+}
+
+SymbolType SymFunc::getVarType() {
+    return _args->getSymbol("result")->getVarType();
+}
+
+SymbolPtr SymFunc::getVarTypeSymbol() {
+    return _args->getSymbol("result")->getVarTypeSymbol();
 }
 
 SymParamBase::SymParamBase(SymbolType type, std::string name, SymbolPtr varType, SymbolPtr method, size_t offset) :

@@ -149,6 +149,7 @@ public:
     std::string toString(std::string, bool);
     SymbolPtr getSymbol();
     PNode getRight();
+    int getSize() override;
     SymbolType getType() override;
     void generate(AsmCode& asmCode) override;
     void generateLValue(AsmCode& asmCode) override;
@@ -243,7 +244,10 @@ public:
     SymbolPtr getSymbol();
     SymbolType getType() override;
     std::string toString(std::string, bool);
-    void generate(AsmCode& asmCode);
+    int getSize() override;
+    void generate(AsmCode& asmCode) override;
+    void generateLValue(AsmCode& asmCode) override;
+    bool isLocal() override { return true; }
 protected:
     PNode _expr;
     std::vector<PNode> _args;
